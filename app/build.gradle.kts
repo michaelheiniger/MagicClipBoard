@@ -61,9 +61,20 @@ dependencies {
     implementation(Libs.composeMaterial)
     implementation(Libs.lifecycleRuntimeKtx)
     implementation(Libs.activityCompose)
-    testImplementation(Libs.jUnit4)
+
+    testImplementation(Libs.jUnit5Api)
+    testRuntimeOnly(Libs.jUnit5Engine)
+    testRuntimeOnly(Libs.jUnit5Vintage)
     androidTestImplementation(Libs.testExtJUnit)
+    testImplementation(Libs.mockk)
+    testImplementation(Libs.assertJCore)
+    androidTestImplementation(Libs.assertJCore)
     androidTestImplementation(Libs.testEspressoCore)
     androidTestImplementation(Libs.composeUiTestJUnit4)
     debugImplementation(Libs.composeUiTooling)
+}
+
+// For jUnit5 tests
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
