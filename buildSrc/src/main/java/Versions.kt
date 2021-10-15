@@ -10,6 +10,8 @@ object Versions {
 
     // Gradle plugins
     const val androidGradlePlugin = "7.0.3"
+    const val ktlintGradlePlugin = "10.1.0"
+    const val detekt = "1.18.1"
 
     // Libraries
     const val compose = "1.0.3"
