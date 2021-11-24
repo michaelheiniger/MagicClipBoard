@@ -73,6 +73,7 @@ dependencies {
     androidTestImplementation(Libs.testEspressoCore)
     androidTestImplementation(Libs.composeUiTestJUnit4)
     debugImplementation(Libs.composeUiTooling)
+    testImplementation(Libs.kotlinxCoroutinesTest)
 }
 
 // For jUnit5 tests
