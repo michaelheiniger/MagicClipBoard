@@ -61,6 +61,7 @@ dependencies {
     implementation(Libs.composeMaterial)
     implementation(Libs.lifecycleRuntimeKtx)
     implementation(Libs.activityCompose)
+    implementation(Libs.kotlinxCoroutinesCore)
 
     testImplementation(Libs.jUnit5Api)
     testRuntimeOnly(Libs.jUnit5Engine)
