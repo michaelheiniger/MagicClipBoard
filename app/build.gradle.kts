@@ -55,13 +55,15 @@ android {
 }
 
 dependencies {
-    implementation(Libs.coreKtx)
+    implementation(Libs.activityCompose)
+    implementation(Libs.composeMaterial)
     implementation(Libs.composeUi)
     implementation(Libs.composeUiToolingPreview)
-    implementation(Libs.composeMaterial)
-    implementation(Libs.lifecycleRuntimeKtx)
-    implementation(Libs.activityCompose)
+    implementation(Libs.coreKtx)
     implementation(Libs.kotlinxCoroutinesCore)
+    implementation(Libs.lifecycleRuntimeKtx)
+    implementation(Libs.tinyLogApi)
+    implementation(Libs.tinyLogImpl)
 
     testImplementation(Libs.jUnit5Api)
     testRuntimeOnly(Libs.jUnit5Engine)

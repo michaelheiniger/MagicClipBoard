@@ -6,13 +6,16 @@ object Libs {
     const val composeUiTestJUnit4 = "androidx.compose.ui:ui-test-junit4:${Versions.compose}"
     const val composeUiTooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
     const val composeUiToolingPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.compose}"
-    const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     const val coreKtx = "androidx.core:core-ktx:1.5.0"
     const val jUnit5Api = "org.junit.jupiter:junit-jupiter-api:5.7.1"
     const val jUnit5Engine = "org.junit.jupiter:junit-jupiter-engine:5.7.1"
     const val jUnit5Vintage = "org.junit.vintage:junit-vintage-engine:5.7.1" // for jUnit4 tests
+    const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    const val kotlinxCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0"
     const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
     const val mockk = "io.mockk:mockk:1.12.0"
     const val testEspressoCore = "androidx.test.espresso:espresso-core:3.4.0"
     const val testExtJUnit = "androidx.test.ext:junit:1.1.3"
+    const val tinyLogApi = "org.tinylog:tinylog-api-kotlin:2.2.1"
+    const val tinyLogImpl = "org.tinylog:tinylog-impl:2.2.1"
 }
