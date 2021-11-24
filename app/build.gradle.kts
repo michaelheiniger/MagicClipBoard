@@ -61,6 +61,7 @@ dependencies {
     implementation(Libs.composeUiToolingPreview)
     implementation(Libs.coreKtx)
     implementation(Libs.kotlinxCoroutinesCore)
+    implementation(Libs.kotlinxCoroutinesAndroid)
     implementation(Libs.lifecycleRuntimeKtx)
     implementation(Libs.tinyLogApi)
     implementation(Libs.tinyLogImpl)

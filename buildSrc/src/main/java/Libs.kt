@@ -10,6 +10,7 @@ object Libs {
     const val jUnit5Api = "org.junit.jupiter:junit-jupiter-api:5.7.1"
     const val jUnit5Engine = "org.junit.jupiter:junit-jupiter-engine:5.7.1"
     const val jUnit5Vintage = "org.junit.vintage:junit-vintage-engine:5.7.1" // for jUnit4 tests
+    const val kotlinxCoroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
     const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     const val kotlinxCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0"
     const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
