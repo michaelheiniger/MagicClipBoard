@@ -24,6 +24,23 @@ allprojects {
     }
     apply(plugin = ("org.jlleitschuh.gradle.ktlint"))
     apply(plugin = ("io.gitlab.arturbosch.detekt"))
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            freeCompilerArgs = listOf(
+                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=kotlinx.coroutines.InternalCoroutinesApi",
+                "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
+                "-Xuse-experimental=androidx.compose.ExperimentalComposeApi",
+                "-Xuse-experimental=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
+                "-Xuse-experimental=androidx.compose.runtime.ExperimentalComposeApi",
+                "-Xuse-experimental=androidx.compose.ui.ExperimentalComposeUiApi",
+                "-Xuse-experimental=coil.annotation.ExperimentalCoilApi"
+            )
+        }
+    }
 }
 
 dependencies {
