@@ -8,5 +8,5 @@ interface LocalStore {
     suspend fun addItem(item: McbItem)
     suspend fun deleteItem(id: McbItemId)
     suspend fun getItems(): List<McbItem>
-    fun observeItems(): Flow<McbItem>
+    fun observeItems(): Flow<List<McbItem>>
 }
