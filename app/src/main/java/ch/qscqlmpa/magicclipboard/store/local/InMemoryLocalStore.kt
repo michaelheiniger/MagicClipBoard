@@ -9,9 +9,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class InMemoryLocalStore @Inject constructor(
+class InMemoryLocalStore(
     private val ioDispatcher: CoroutineDispatcher,
     initialItems: Set<McbItem>
 ) : LocalStore {

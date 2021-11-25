@@ -3,41 +3,26 @@ package ch.qscqlmpa.magicclipboard
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
+import androidx.compose.runtime.DisposableEffect
+import ch.qscqlmpa.magicclipboard.ui.MagicClipBoard
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardScreen
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardVM
+import org.koin.androidx.compose.viewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            MagicClipBoardTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
+            MagicClipBoard {
+                val viewModel by viewModel<MagicClipboardVM>()
+                DisposableEffect(viewModel) {
+                    viewModel.onStart()
+                    onDispose { viewModel.onStop() }
                 }
+                MagicClipboardScreen(viewModel)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MagicClipBoardTheme {
-        Greeting("Android")
     }
 }

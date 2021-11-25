@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MagicClipBoard</string>
+    <string name="no_clipboard_item">No clipboard item</string>
+    <string name="clipboard_item_cd">Clipboard item: %1$s</string>
+    <string name="clipboard_date_a_few_seconds_ago">A few seconds ago</string>
+    <string name="clipboard_date_a_few_minutes_ago">A few minutes ago</string>
+    <string name="clipboard_date_today_at">Today at %1$s</string>
 </resources>

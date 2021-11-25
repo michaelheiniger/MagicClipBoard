@@ -10,4 +10,4 @@ data class McbItem(
 )
 
 @JvmInline
-value class McbItemId(val id: UUID)
+value class McbItemId(val value: UUID)

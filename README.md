@@ -1,4 +1,4 @@
-# MagicClipBoard
+# MagicClipboard
 
 Share your clipboard across all your devices !
 

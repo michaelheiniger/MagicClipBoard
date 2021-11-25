@@ -16,4 +16,5 @@ object Versions {
 
     // Libraries
     const val compose = "1.0.3"
+    const val koin = "3.1.3"
 }
