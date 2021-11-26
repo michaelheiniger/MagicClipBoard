@@ -17,4 +17,8 @@
     <string name="paste_value_from_device_clipboard_cd">Paste value from device clipboard into MagicClipboard</string>
     <string name="paste_into_magic_cliboard">Paste</string>
     <string name="item_pasted_in_magic_clipbaord">Item pasted in MagicClipboard !</string>
+    <string name="value_as_qr_code_cd">Value as QR code</string>
+    <string name="value_as_qr_code">Scan the QR code to get the value !</string>
+    <string name="close">Close</string>
+    <string name="show_value_as_qr_code_cd">Show value as QR code</string>
 </resources>

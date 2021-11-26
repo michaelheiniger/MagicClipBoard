@@ -1,10 +1,12 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,8 +38,11 @@ import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.debugClipBoardItems
 import ch.qscqlmpa.magicclipboard.ui.MagicClipboardSimpleTopBar
 import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
+import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
 import ch.qscqlmpa.magicclipboard.ui.common.LoadingSpinner
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -206,9 +212,8 @@ private fun ClipboardItem(
     onCopyItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     val dismissState = rememberDismissState()
-    if (dismissState.isDismissed(DismissDirection.EndToStart)) {
-        onDeleteItem(item.id)
-    }
+    if (dismissState.isDismissed(DismissDirection.EndToStart)) onDeleteItem(item.id)
+
     SwipeToDismiss(
         state = dismissState,
         directions = setOf(DismissDirection.EndToStart),
@@ -263,6 +268,7 @@ private fun ClipboardItemContent(
 ) {
     val itemCd = stringResource(R.string.clipboard_item_cd, item.value) // Can't inline: composable
     val context = LocalContext.current
+    var showQrCodeModal by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -284,6 +290,12 @@ private fun ClipboardItemContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                IconButton(onClick = { showQrCodeModal = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_baseline_qr_code_24),
+                        contentDescription = stringResource(R.string.show_value_as_qr_code_cd)
+                    )
+                }
                 IconButton(onClick = {
                     val intent = Intent().apply {
                         action = Intent.ACTION_SEND
@@ -306,6 +318,40 @@ private fun ClipboardItemContent(
             }
         }
     }
+
+    if (showQrCodeModal) {
+        ShowQrCodeModal(item, onCloseClick = { showQrCodeModal = false })
+    }
+}
+
+@Composable
+private fun ShowQrCodeModal(item: McbItem, onCloseClick: () -> Unit) {
+    val qrCode by remember { mutableStateOf(buildQrCodeBitmap(item.value)) }
+    InfoDialog(
+        text = R.string.value_as_qr_code,
+        content = {
+            Image(
+                bitmap = qrCode.asImageBitmap(),
+                contentDescription = stringResource(R.string.value_as_qr_code_cd),
+                modifier = Modifier.size(300.dp)
+            )
+        },
+        onCloseClick = onCloseClick
+    )
+}
+
+private fun buildQrCodeBitmap(qrCodeContent: String): Bitmap {
+    val writer = QRCodeWriter()
+    val bitMatrix = writer.encode(qrCodeContent, BarcodeFormat.QR_CODE, 512, 512)
+    val width = bitMatrix.width
+    val height = bitMatrix.height
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    for (x in 0 until width) {
+        for (y in 0 until height) {
+            bitmap.setPixel(x, y, if (bitMatrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+        }
+    }
+    return bitmap
 }
 
 @Composable

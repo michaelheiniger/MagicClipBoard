@@ -7,6 +7,7 @@ object Libs {
     const val composeUiTooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
     const val composeUiToolingPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.compose}"
     const val coreKtx = "androidx.core:core-ktx:1.5.0"
+    const val googleZxingCore = "com.google.zxing:core:3.4.1"
     const val jUnit5Api = "org.junit.jupiter:junit-jupiter-api:5.7.1"
     const val jUnit5Engine = "org.junit.jupiter:junit-jupiter-engine:5.7.1"
     const val jUnit5Vintage = "org.junit.vintage:junit-vintage-engine:5.7.1" // for jUnit4 tests

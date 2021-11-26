@@ -60,6 +60,7 @@ dependencies {
     implementation(Libs.composeUi)
     implementation(Libs.composeUiToolingPreview)
     implementation(Libs.coreKtx)
+    implementation(Libs.googleZxingCore)
     implementation(Libs.koinAndroid)
     implementation(Libs.koinAndroidCompose)
     implementation(Libs.kotlinxCoroutinesAndroid)
