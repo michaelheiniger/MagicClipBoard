@@ -2,6 +2,7 @@
     <string name="app_name">MagicClipboard</string>
     <string name="no_clipboard_item">No clipboard item</string>
     <string name="clipboard_item_cd">Clipboard item: %1$s</string>
+    <string name="load_clipboard_item_into_device_clipboard_cd">Load clipboard item into device clipboard</string>
     <string name="clipboard_date_a_few_seconds_ago">A few seconds ago</string>
     <string name="clipboard_date_a_few_minutes_ago">A few minutes ago</string>
     <string name="clipboard_date_today_at">Today at %1$s</string>
@@ -11,4 +12,6 @@
     <string name="item_deleted_succesfully">Item deleted</string>
     <string name="retry">Retry</string>
     <string name="ok">OK</string>
+    <string name="load_clipboard_item_into_device_clipboard">Copy to device clipboard</string>
+    <string name="item_pasted_in_device_clipboard">Value pasted in device clipboard</string>
 </resources>

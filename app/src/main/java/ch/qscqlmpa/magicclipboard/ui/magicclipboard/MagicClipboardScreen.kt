@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -50,6 +51,7 @@ private fun MagicClipboardBodyPreview() {
                 messages = emptyList()
             ),
             onDeleteItem = {},
+            onCopyItemToDeviceClipboard = {},
             onMessageDismissState = {}
         )
     }
@@ -61,7 +63,8 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
     MagicClipboardBody(
         uiState = uiState,
         onDeleteItem = { itemId -> viewModel.onDeleteItem(itemId) },
-        onMessageDismissState = viewModel::messageShown
+        onMessageDismissState = viewModel::messageShown,
+        onCopyItemToDeviceClipboard = viewModel::onCopyItemToDeviceClipboard,
     )
 }
 
@@ -69,6 +72,7 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
 fun MagicClipboardBody(
     uiState: MagicClipboardUiState,
     onDeleteItem: (McbItemId) -> Unit,
+    onCopyItemToDeviceClipboard: (McbItem) -> Unit,
     onMessageDismissState: (Long) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -89,7 +93,8 @@ fun MagicClipboardBody(
                     is MagicClipboardUiState.HasItems -> {
                         ClipboardItemList(
                             items = uiState.items,
-                            onDeleteItem = { item -> onDeleteItem(item) }
+                            onDeleteItem = { item -> onDeleteItem(item) },
+                            onCopyItemToDeviceClipboard = onCopyItemToDeviceClipboard
                         )
                     }
                 }
@@ -123,6 +128,9 @@ fun MagicClipboardBody(
                     is ItemMessage.Deletion -> {
                         if (!message.deletionSuccessful) onDeleteItemState(message.itemId) // retry
                     }
+                    is ItemMessage.ItemLoadedInDeviceClipboard -> {
+                        // Nothing to do
+                    }
                 }
             }
             // Once the message is displayed and dismissed, notify the ViewModel
@@ -146,20 +154,28 @@ private fun NoItems(modifier: Modifier = Modifier) {
 @Composable
 private fun ClipboardItemList(
     items: List<McbItem>,
-    onDeleteItem: (McbItemId) -> Unit
+    onDeleteItem: (McbItemId) -> Unit,
+    onCopyItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(items, key = { item -> item.id.value }) { item -> ClipboardItem(item, onDeleteItem) }
+        items(items, key = { item -> item.id.value }) { item ->
+            ClipboardItem(
+                item = item,
+                onDeleteItem = onDeleteItem,
+                onCopyItemToDeviceClipboard = onCopyItemToDeviceClipboard
+            )
+        }
     }
 }
 
 @Composable
 private fun ClipboardItem(
     item: McbItem,
-    onDeleteItem: (McbItemId) -> Unit
+    onDeleteItem: (McbItemId) -> Unit,
+    onCopyItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     val dismissState = rememberDismissState()
     if (dismissState.isDismissed(DismissDirection.EndToStart)) {
@@ -202,28 +218,52 @@ private fun ClipboardItem(
             }
         },
         dismissContent = {
-            val itemCd = stringResource(R.string.clipboard_item_cd, item.value) // Can't inline: composable
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .semantics { contentDescription = itemCd },
-                elevation = animateDpAsState(if (dismissState.dismissDirection != null) 8.dp else 4.dp).value
+            ClipboardItemContent(
+                item = item,
+                sliding = dismissState.dismissDirection != null,
+                onCopyItemToDeviceClipboard = onCopyItemToDeviceClipboard
+            )
+        }
+    )
+}
+
+@Composable
+private fun ClipboardItemContent(
+    item: McbItem,
+    sliding: Boolean,
+    onCopyItemToDeviceClipboard: (McbItem) -> Unit
+) {
+    val itemCd = stringResource(R.string.clipboard_item_cd, item.value) // Can't inline: composable
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { contentDescription = itemCd },
+        elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(8.dp)
+        ) {
+            Text(
+                text = formatClipBoardDate(item.creationDate),
+                fontSize = 10.sp
+            )
+            Text(
+                text = item.value,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize().padding(8.dp)
-                ) {
-                    Text(
-                        text = formatClipBoardDate(item.creationDate),
-                        fontSize = 10.sp
-                    )
-                    Text(
-                        text = item.value,
-                        overflow = TextOverflow.Ellipsis
+                IconButton(onClick = { onCopyItemToDeviceClipboard(item) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_baseline_content_copy_24),
+                        contentDescription = null
                     )
                 }
             }
         }
-    )
+    }
 }
 
 @Composable

@@ -1,5 +1,7 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.R
@@ -45,6 +47,13 @@ sealed interface ItemMessage : Message {
         override val itemId: McbItemId,
         val deletionSuccessful: Boolean
     ) : ItemMessage
+
+    data class ItemLoadedInDeviceClipboard(
+        override val messageId: Long,
+        @StringRes override val textId: Int,
+        @StringRes override val actionTextId: Int? = null,
+        override val itemId: McbItemId,
+    ) : ItemMessage
 }
 
 private data class MagicClipboardViewModelState(
@@ -68,7 +77,8 @@ private data class MagicClipboardViewModelState(
 }
 
 class MagicClipboardViewModel(
-    private val localStore: LocalStore
+    private val localStore: LocalStore,
+    private val clipboardManager: ClipboardManager
 ) : BaseViewModel() {
 
     private val viewModelState = MutableStateFlow(MagicClipboardViewModelState(isLoading = true))
@@ -110,6 +120,19 @@ class MagicClipboardViewModel(
                 }
                 it.copy(messages = it.messages + message)
             }
+        }
+    }
+
+    fun onCopyItemToDeviceClipboard(item: McbItem) {
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(item.label, item.value))
+        viewModelState.update {
+            val message = ItemMessage.ItemLoadedInDeviceClipboard(
+                messageId = UUID.randomUUID().mostSignificantBits,
+                textId = R.string.item_pasted_in_device_clipboard,
+                actionTextId = R.string.ok,
+                itemId = item.id
+            )
+            it.copy(messages = it.messages + message)
         }
     }
 
