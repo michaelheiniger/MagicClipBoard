@@ -4,8 +4,9 @@ import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -16,22 +17,14 @@ class InMemoryLocalStore(
 ) : LocalStore {
 
     private val mutex = Mutex()
-    private val items: MutableMap<McbItemId, McbItem> = initialItems.map { item -> item.id to item }.toMap().toMutableMap()
-    private val itemsFlow = MutableSharedFlow<List<McbItem>>(replay = 1)
-
-    private val itemsSortedOnCreationDateDesc: List<McbItem>
-        get() =
-            items.values.toList().sortedByDescending(McbItem::creationDate)
-
-    init {
-        itemsFlow.tryEmit(itemsSortedOnCreationDateDesc)
-    }
+    private val itemsStateFlow = MutableStateFlow(initialItems.map { item -> item.id to item }.toMap())
 
     override suspend fun addItem(item: McbItem) {
         withContext(ioDispatcher) {
             mutex.withLock {
-                items[item.id] = item
-                itemsFlow.emit(itemsSortedOnCreationDateDesc)
+                val itemsSnapshot = itemsStateFlow.value.toMutableMap()
+                itemsSnapshot[item.id] = item
+                itemsStateFlow.value = itemsSnapshot
             }
         }
     }
@@ -39,17 +32,22 @@ class InMemoryLocalStore(
     override suspend fun deleteItem(id: McbItemId) {
         withContext(ioDispatcher) {
             mutex.withLock {
-                items.remove(id)
-                itemsFlow.emit(itemsSortedOnCreationDateDesc)
+                val itemsSnapshot = itemsStateFlow.value.toMutableMap()
+                itemsSnapshot.remove(id)
+                itemsStateFlow.value = itemsSnapshot
             }
         }
     }
 
     override suspend fun getItems(): List<McbItem> {
         return withContext(ioDispatcher) {
-            mutex.withLock { itemsSortedOnCreationDateDesc }
+            mutex.withLock { itemsAsSortedList(itemsStateFlow.value) }
         }
     }
 
-    override fun observeItems(): Flow<List<McbItem>> = itemsFlow.asSharedFlow()
+    override fun observeItems(): Flow<List<McbItem>> = itemsStateFlow.asStateFlow().map(::itemsAsSortedList)
+
+    private fun itemsAsSortedList(itemsMap: Map<McbItemId, McbItem>): List<McbItem> {
+        return itemsMap.values.toList().sortedByDescending(McbItem::creationDate)
+    }
 }
