@@ -14,4 +14,7 @@
     <string name="ok">OK</string>
     <string name="item_pasted_in_device_clipboard">Value pasted in device clipboard</string>
     <string name="share_clipboard_item_cd">Share item value</string>
+    <string name="paste_value_from_device_clipboard_cd">Paste value from device clipboard into MagicClipboard</string>
+    <string name="paste_into_magic_cliboard">Paste</string>
+    <string name="item_pasted_in_magic_clipbaord">Item pasted in MagicClipboard !</string>
 </resources>

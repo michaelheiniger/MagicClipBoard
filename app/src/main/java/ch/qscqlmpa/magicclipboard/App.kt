@@ -17,6 +17,7 @@ class App : Application() {
             modules(
                 appModule,
                 localStoreModule,
+                usecasesModule,
                 viewModelsModule
             )
         }

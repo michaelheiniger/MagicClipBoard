@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.*
@@ -56,6 +57,7 @@ private fun MagicClipboardBodyPreview() {
             ),
             onDeleteItem = {},
             onCopyItemToDeviceClipboard = {},
+            onPasteToMagicClipboard = {},
             onMessageDismissState = {}
         )
     }
@@ -68,6 +70,7 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
         uiState = uiState,
         onDeleteItem = { itemId -> viewModel.onDeleteItem(itemId) },
         onMessageDismissState = viewModel::messageShown,
+        onPasteToMagicClipboard = viewModel::onPasteToMagicClipboard,
         onCopyItemToDeviceClipboard = viewModel::onCopyItemToDeviceClipboard
     )
 }
@@ -77,14 +80,33 @@ fun MagicClipboardBody(
     uiState: MagicClipboardUiState,
     onDeleteItem: (McbItemId) -> Unit,
     onCopyItemToDeviceClipboard: (McbItem) -> Unit,
+    onPasteToMagicClipboard: () -> Unit,
     onMessageDismissState: (Long) -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = { MagicClipboardSimpleTopBar() },
-        backgroundColor = MaterialTheme.colors.background,
-        snackbarHost = { DefaultSnackbar(snackbarHostState = scaffoldState.snackbarHostState) }
+        snackbarHost = { DefaultSnackbar(snackbarHostState = scaffoldState.snackbarHostState) },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onPasteToMagicClipboard,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        tint = Color.White,
+                        contentDescription = stringResource(R.string.paste_value_from_device_clipboard_cd)
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.paste_into_magic_cliboard),
+                        color = Color.White
+                    )
+                }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 8.dp, vertical = 8.dp),
@@ -134,6 +156,8 @@ fun MagicClipboardBody(
                     }
                     is ItemMessage.ItemLoadedInDeviceClipboard -> {
                         // Nothing to do
+                    }
+                    is ItemMessage.ItemPastedInMagicClipboard -> {
                     }
                 }
             }

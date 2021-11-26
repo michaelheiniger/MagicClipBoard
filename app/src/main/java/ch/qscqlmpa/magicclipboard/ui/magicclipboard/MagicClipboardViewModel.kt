@@ -1,10 +1,9 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.R
+import ch.qscqlmpa.magicclipboard.clipboard.ClipboardUsecases
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.data.Result
@@ -54,6 +53,13 @@ sealed interface ItemMessage : Message {
         @StringRes override val actionTextId: Int? = null,
         override val itemId: McbItemId,
     ) : ItemMessage
+
+    data class ItemPastedInMagicClipboard(
+        override val messageId: Long,
+        @StringRes override val textId: Int,
+        @StringRes override val actionTextId: Int? = null,
+        override val itemId: McbItemId,
+    ) : ItemMessage
 }
 
 private data class MagicClipboardViewModelState(
@@ -78,7 +84,7 @@ private data class MagicClipboardViewModelState(
 
 class MagicClipboardViewModel(
     private val localStore: LocalStore,
-    private val clipboardManager: ClipboardManager
+    private val clipboardUsecases: ClipboardUsecases
 ) : BaseViewModel() {
 
     private val viewModelState = MutableStateFlow(MagicClipboardViewModelState(isLoading = true))
@@ -123,8 +129,24 @@ class MagicClipboardViewModel(
         }
     }
 
+    fun onPasteToMagicClipboard() {
+        viewModelScope.launch {
+            clipboardUsecases.pasteItemFromDeviceClipboard()?.let { newItemId ->
+                viewModelState.update {
+                    val message = ItemMessage.ItemPastedInMagicClipboard(
+                        messageId = UUID.randomUUID().mostSignificantBits,
+                        textId = R.string.item_pasted_in_magic_clipbaord,
+                        actionTextId = R.string.ok,
+                        itemId = newItemId
+                    )
+                    it.copy(messages = it.messages + message)
+                }
+            }
+        }
+    }
+
     fun onCopyItemToDeviceClipboard(item: McbItem) {
-        clipboardManager.setPrimaryClip(ClipData.newPlainText(item.label, item.value))
+        clipboardUsecases.pasteItemIntoDeviceClipboard(item)
         viewModelState.update {
             val message = ItemMessage.ItemLoadedInDeviceClipboard(
                 messageId = UUID.randomUUID().mostSignificantBits,
