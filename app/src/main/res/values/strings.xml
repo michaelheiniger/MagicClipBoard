@@ -12,6 +12,6 @@
     <string name="item_deleted_succesfully">Item deleted</string>
     <string name="retry">Retry</string>
     <string name="ok">OK</string>
-    <string name="load_clipboard_item_into_device_clipboard">Copy to device clipboard</string>
     <string name="item_pasted_in_device_clipboard">Value pasted in device clipboard</string>
+    <string name="share_clipboard_item_cd">Share item value</string>
 </resources>

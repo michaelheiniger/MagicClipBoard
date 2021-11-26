@@ -1,5 +1,6 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 
+import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
@@ -11,11 +12,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
@@ -64,7 +68,7 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
         uiState = uiState,
         onDeleteItem = { itemId -> viewModel.onDeleteItem(itemId) },
         onMessageDismissState = viewModel::messageShown,
-        onCopyItemToDeviceClipboard = viewModel::onCopyItemToDeviceClipboard,
+        onCopyItemToDeviceClipboard = viewModel::onCopyItemToDeviceClipboard
     )
 }
 
@@ -234,6 +238,7 @@ private fun ClipboardItemContent(
     onCopyItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     val itemCd = stringResource(R.string.clipboard_item_cd, item.value) // Can't inline: composable
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -255,10 +260,23 @@ private fun ClipboardItemContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                IconButton(onClick = {
+                    val intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, item.value)
+                        type = "text/plain"
+                    }
+                    startActivity(context, intent, null)
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Share,
+                        contentDescription = stringResource(R.string.share_clipboard_item_cd)
+                    )
+                }
                 IconButton(onClick = { onCopyItemToDeviceClipboard(item) }) {
                     Icon(
                         painter = painterResource(R.drawable.ic_baseline_content_copy_24),
-                        contentDescription = null
+                        contentDescription = stringResource(R.string.load_clipboard_item_into_device_clipboard_cd)
                     )
                 }
             }
