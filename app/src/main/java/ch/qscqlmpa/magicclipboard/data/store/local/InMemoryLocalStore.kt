@@ -1,7 +1,9 @@
-package ch.qscqlmpa.magicclipboard.store.local
+package ch.qscqlmpa.magicclipboard.data.store.local
 
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
+import ch.qscqlmpa.magicclipboard.data.Result
+import ch.qscqlmpa.magicclipboard.data.ResultWithData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,19 +31,20 @@ class InMemoryLocalStore(
         }
     }
 
-    override suspend fun deleteItem(id: McbItemId) {
-        withContext(ioDispatcher) {
+    override suspend fun deleteItem(id: McbItemId): Result {
+        return withContext(ioDispatcher) {
             mutex.withLock {
                 val itemsSnapshot = itemsStateFlow.value.toMutableMap()
-                itemsSnapshot.remove(id)
+                val deletedItem = itemsSnapshot.remove(id)
                 itemsStateFlow.value = itemsSnapshot
+                if (deletedItem != null) Result.Success else Result.Error(IllegalArgumentException("Unable to find item"))
             }
         }
     }
 
-    override suspend fun getItems(): List<McbItem> {
+    override suspend fun getItems(): ResultWithData<List<McbItem>> {
         return withContext(ioDispatcher) {
-            mutex.withLock { itemsAsSortedList(itemsStateFlow.value) }
+            mutex.withLock { ResultWithData.Success(itemsAsSortedList(itemsStateFlow.value)) }
         }
     }
 

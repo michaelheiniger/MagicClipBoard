@@ -1,47 +1,24 @@
 package ch.qscqlmpa.magicclipboard.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
-
-@Preview(showBackground = true)
-@Composable
-fun MagicClipBoardPreview() {
-    MagicClipBoard {
-        Text("Coucou")
-    }
-}
+import androidx.compose.ui.res.stringResource
+import ch.qscqlmpa.magicclipboard.R
 
 @Composable
-fun MagicClipBoard(
-    content: @Composable () -> Unit
-) {
-    MagicClipBoardTheme {
-        Scaffold(
-            topBar = { McbTopBar() },
-        ) { innerPaddings ->
-            Surface(
-                modifier = Modifier.padding(innerPaddings).fillMaxSize(),
-                color = MaterialTheme.colors.background
-            ) {
-                content()
-            }
-        }
-    }
-}
-
-@Composable
-private fun McbTopBar() {
+fun MagicClipboardSimpleTopBar() {
     TopAppBar(
         title = {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Magic Clipboard")
+                Text(text = stringResource(R.string.app_name))
             }
         }
     )

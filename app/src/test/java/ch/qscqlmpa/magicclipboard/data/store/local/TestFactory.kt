@@ -1,4 +1,4 @@
-package ch.qscqlmpa.magicclipboard.store.local
+package ch.qscqlmpa.magicclipboard.data.store.local
 
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId

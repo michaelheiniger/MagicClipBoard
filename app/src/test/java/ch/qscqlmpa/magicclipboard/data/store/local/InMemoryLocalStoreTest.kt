@@ -1,6 +1,8 @@
-package ch.qscqlmpa.magicclipboard.store.local
+package ch.qscqlmpa.magicclipboard.data.store.local
 
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
+import ch.qscqlmpa.magicclipboard.data.Result
+import ch.qscqlmpa.magicclipboard.data.data
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -24,43 +26,43 @@ internal class InMemoryLocalStoreTest {
     }
 
     @Nested
-    inner class AddingItem() {
+    inner class AddingItem {
         @Test
         fun `A new item can be added to the store`() = runBlockingTest {
             // Given
             setup(initialItems = setOf())
-            assertThat(localStore.getItems()).isEmpty()
+            assertThat(localStore.getItems().data()).isEmpty()
 
             // When
             localStore.addItem(newItem1)
 
             // Then
-            assertThat(localStore.getItems()).hasSize(1)
-            assertThat(localStore.getItems()).contains(newItem1)
+            assertThat(localStore.getItems().data()).hasSize(1)
+            assertThat(localStore.getItems().data()).contains(newItem1)
 
             // When
             localStore.addItem(newItem2)
 
             // Then
-            assertThat(localStore.getItems()).hasSize(2)
-            assertThat(localStore.getItems()).contains(newItem1, newItem2)
+            assertThat(localStore.getItems().data()).hasSize(2)
+            assertThat(localStore.getItems().data()).contains(newItem1, newItem2)
         }
     }
 
     @Nested
-    inner class DeletingItem() {
+    inner class DeletingItem {
         @Test
         fun `An existing item can be deleted from the store`() = runBlockingTest {
             // Given
             setup(initialItems = setOf(newItem1, newItem2, newItem3))
-            assertThat(localStore.getItems()).contains(newItem1, newItem2, newItem3)
+            assertThat(localStore.getItems().data()).contains(newItem1, newItem2, newItem3)
 
             // When
-            localStore.deleteItem(newItem2.id)
+            assertThat(localStore.deleteItem(newItem2.id)).isInstanceOf(Result.Success::class.java)
 
             // Then
-            assertThat(localStore.getItems()).hasSize(2)
-            assertThat(localStore.getItems()).contains(newItem1, newItem3)
+            assertThat(localStore.getItems().data()).hasSize(2)
+            assertThat(localStore.getItems().data()).contains(newItem1, newItem3)
         }
     }
 
@@ -72,7 +74,7 @@ internal class InMemoryLocalStoreTest {
             setup(initialItems = setOf(newItem3, newItem1, newItem2))
 
             // When
-            val returnedItems = localStore.getItems()
+            val returnedItems = localStore.getItems().data()
 
             // Then
             assertThat(returnedItems).containsExactly(newItem1, newItem2, newItem3)

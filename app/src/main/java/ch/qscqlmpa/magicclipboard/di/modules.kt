@@ -1,10 +1,10 @@
 package ch.qscqlmpa.magicclipboard.di
 
 import ch.qscqlmpa.magicclipboard.BuildConfig
+import ch.qscqlmpa.magicclipboard.data.store.local.InMemoryLocalStore
+import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 import ch.qscqlmpa.magicclipboard.debugClipBoardItems
-import ch.qscqlmpa.magicclipboard.store.local.InMemoryLocalStore
-import ch.qscqlmpa.magicclipboard.store.local.LocalStore
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardVM
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -22,5 +22,5 @@ val localStoreModule = module {
 }
 
 val viewModelsModule = module {
-    viewModel { MagicClipboardVM(get()) }
+    viewModel { MagicClipboardViewModel(get()) }
 }

@@ -1,4 +1,4 @@
-package ch.qscqlmpa.magicclipboard.store.local
+package ch.qscqlmpa.magicclipboard.data.store.local
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

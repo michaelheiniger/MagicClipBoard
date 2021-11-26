@@ -2,7 +2,7 @@ package ch.qscqlmpa.magicclipboard.ui.common
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 fun LoadingSpinner() {
     Column(
         Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .animateContentSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
