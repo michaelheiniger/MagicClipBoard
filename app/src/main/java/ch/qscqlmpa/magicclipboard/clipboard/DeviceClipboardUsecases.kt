@@ -5,7 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 
-class ClipboardUsecases(
+class DeviceClipboardUsecases(
     private val context: Context,
     private val clipboardManager: ClipboardManager,
     private val localStore: LocalStore

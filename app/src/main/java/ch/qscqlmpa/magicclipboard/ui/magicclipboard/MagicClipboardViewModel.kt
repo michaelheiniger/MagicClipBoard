@@ -3,11 +3,8 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.R
-import ch.qscqlmpa.magicclipboard.clipboard.ClipboardUsecases
-import ch.qscqlmpa.magicclipboard.clipboard.McbItem
-import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
+import ch.qscqlmpa.magicclipboard.clipboard.*
 import ch.qscqlmpa.magicclipboard.data.Result
-import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -83,8 +80,9 @@ private data class MagicClipboardViewModelState(
 }
 
 class MagicClipboardViewModel(
-    private val localStore: LocalStore,
-    private val clipboardUsecases: ClipboardUsecases
+    private val magicClipboardRepository: MagicClipboardRepository,
+    private val deviceClipboardUsecases: DeviceClipboardUsecases,
+    private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase
 ) : BaseViewModel() {
 
     private val viewModelState = MutableStateFlow(MagicClipboardViewModelState(isLoading = true))
@@ -101,7 +99,7 @@ class MagicClipboardViewModel(
 
     fun onDeleteItem(itemId: McbItemId) {
         viewModelScope.launch {
-            val result = localStore.deleteItem(itemId)
+            val result = deleteClipboardItemUsecase.deleteItem(itemId)
             viewModelState.update {
                 val message = when (result) {
                     is Result.Error -> {
@@ -131,7 +129,7 @@ class MagicClipboardViewModel(
 
     fun onPasteToMagicClipboard() {
         viewModelScope.launch {
-            clipboardUsecases.pasteItemFromDeviceClipboard()?.let { newItemId ->
+            deviceClipboardUsecases.pasteItemFromDeviceClipboard()?.let { newItemId ->
                 viewModelState.update {
                     val message = ItemMessage.ItemPastedInMagicClipboard(
                         messageId = UUID.randomUUID().mostSignificantBits,
@@ -146,7 +144,7 @@ class MagicClipboardViewModel(
     }
 
     fun onCopyItemToDeviceClipboard(item: McbItem) {
-        clipboardUsecases.pasteItemIntoDeviceClipboard(item)
+        deviceClipboardUsecases.pasteItemIntoDeviceClipboard(item)
         viewModelState.update {
             val message = ItemMessage.ItemLoadedInDeviceClipboard(
                 messageId = UUID.randomUUID().mostSignificantBits,
@@ -171,7 +169,7 @@ class MagicClipboardViewModel(
     override fun onStart() {
         super.onStart()
         observeCliboardItemsJob = viewModelScope.launch {
-            localStore.observeItems().collect { items ->
+            magicClipboardRepository.observeItems().collect { items ->
                 viewModelState.update { it.copy(items = items, isLoading = false) }
             }
         }
