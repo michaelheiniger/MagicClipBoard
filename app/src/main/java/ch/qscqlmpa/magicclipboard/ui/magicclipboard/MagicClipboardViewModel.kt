@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.clipboard.*
 import ch.qscqlmpa.magicclipboard.data.Result
+import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
+import ch.qscqlmpa.magicclipboard.launch
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -82,7 +84,8 @@ private data class MagicClipboardViewModelState(
 class MagicClipboardViewModel(
     private val magicClipboardRepository: MagicClipboardRepository,
     private val deviceClipboardUsecases: DeviceClipboardUsecases,
-    private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase
+    private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
+    private val idlingResource: McbIdlingResource
 ) : BaseViewModel() {
 
     private val viewModelState = MutableStateFlow(MagicClipboardViewModelState(isLoading = true))
@@ -98,7 +101,9 @@ class MagicClipboardViewModel(
     private lateinit var observeCliboardItemsJob: Job
 
     fun onDeleteItem(itemId: McbItemId) {
-        viewModelScope.launch {
+        viewModelScope.launch(
+            beforeLaunch = { idlingResource.increment("Deleting item $itemId") }
+        ) {
             val result = deleteClipboardItemUsecase.deleteItem(itemId)
             viewModelState.update {
                 val message = when (result) {
@@ -128,7 +133,9 @@ class MagicClipboardViewModel(
     }
 
     fun onPasteToMagicClipboard() {
-        viewModelScope.launch {
+        viewModelScope.launch(
+            beforeLaunch = { idlingResource.increment("Pasting to MagicClipboard") }
+        ) {
             deviceClipboardUsecases.pasteItemFromDeviceClipboard()?.let { newItemId ->
                 viewModelState.update {
                     val message = ItemMessage.ItemPastedInMagicClipboard(
@@ -160,17 +167,19 @@ class MagicClipboardViewModel(
      * Notifies that the message has been shown on the screen.
      */
     fun messageShown(messageId: Long) {
-        viewModelState.update { currenUiState ->
-            val messages = currenUiState.messages.filterNot { it.messageId == messageId }
-            currenUiState.copy(messages = messages)
+        viewModelState.update { currentUiState ->
+            val messages = currentUiState.messages.filterNot { it.messageId == messageId }
+            currentUiState.copy(messages = messages)
         }
     }
 
     override fun onStart() {
         super.onStart()
+        idlingResource.increment("Loading Item list")
         observeCliboardItemsJob = viewModelScope.launch {
             magicClipboardRepository.observeItems().collect { items ->
                 viewModelState.update { it.copy(items = items, isLoading = false) }
+                idlingResource.decrement("Item list updated")
             }
         }
     }

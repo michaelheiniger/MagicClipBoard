@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -40,6 +41,7 @@ import ch.qscqlmpa.magicclipboard.ui.MagicClipboardSimpleTopBar
 import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
 import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
 import ch.qscqlmpa.magicclipboard.ui.common.LoadingSpinner
+import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
@@ -96,6 +98,7 @@ fun MagicClipboardBody(
         snackbarHost = { DefaultSnackbar(snackbarHostState = scaffoldState.snackbarHostState) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
+                modifier = Modifier.testTag(UiTags.pasteToMagicClipboard),
                 onClick = onPasteToMagicClipboard,
                 icon = {
                     Icon(
@@ -192,7 +195,7 @@ private fun ClipboardItemList(
     onCopyItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().animateContentSize(),
+        modifier = Modifier.fillMaxSize().animateContentSize().testTag(UiTags.clipboardItemList),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(items, key = { item -> item.id.value }) { item ->
@@ -272,6 +275,7 @@ private fun ClipboardItemContent(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag("${UiTags.clipboardItem}_${item.id.value}")
             .semantics { contentDescription = itemCd },
         elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value
     ) {
@@ -309,7 +313,10 @@ private fun ClipboardItemContent(
                         contentDescription = stringResource(R.string.share_clipboard_item_cd)
                     )
                 }
-                IconButton(onClick = { onCopyItemToDeviceClipboard(item) }) {
+                IconButton(
+                    modifier = Modifier.testTag("${UiTags.clipboardItem}_${item.id.value}_copyToDevice"),
+                    onClick = { onCopyItemToDeviceClipboard(item) }
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_baseline_content_copy_24),
                         contentDescription = stringResource(R.string.load_clipboard_item_into_device_clipboard_cd)

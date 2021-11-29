@@ -16,5 +16,8 @@ object Versions {
 
     // Libraries
     const val compose = "1.0.3"
-    const val koin = "3.1.3"
+    const val koin = "3.1.4"
+    const val jUnit5 = "5.7.1"
+    const val tinyLog = "2.2.1"
+    const val assertJ = "3.20.2"
 }

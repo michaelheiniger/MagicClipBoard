@@ -13,7 +13,7 @@ android {
         versionCode = Versions.appVersionCode
         versionName = Versions.appVersionName
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "ch.qscqlmpa.magicclipboard.CustomTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -55,33 +55,38 @@ android {
 }
 
 dependencies {
-    implementation(Libs.activityCompose)
-    implementation(Libs.composeMaterial)
-    implementation(Libs.composeUi)
-    implementation(Libs.composeUiToolingPreview)
-    implementation(Libs.coreKtx)
-    implementation(Libs.googleZxingCore)
-    implementation(Libs.koinAndroid)
-    implementation(Libs.koinAndroidCompose)
-    implementation(Libs.kotlinxCoroutinesAndroid)
-    implementation(Libs.kotlinxCoroutinesCore)
-    implementation(Libs.lifecycleRuntimeKtx)
-    implementation(Libs.lifecycleViewModelCompose)
-    implementation(Libs.lifecycleViewModelKtx)
-    implementation(Libs.tinyLogApi)
-    implementation(Libs.tinyLogImpl)
+    debugImplementation("androidx.compose.ui:ui-tooling:${Versions.compose}")
+    implementation("androidx.activity:activity-compose:1.4.0")
+    implementation("androidx.compose.material:material:${Versions.compose}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.compose}")
+    implementation("androidx.compose.ui:ui:${Versions.compose}")
+    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+    implementation("com.google.zxing:core:3.4.1")
+    implementation("io.insert-koin:koin-android:${Versions.koin}")
+    implementation("io.insert-koin:koin-androidx-compose:${Versions.koin}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation("org.tinylog:tinylog-api-kotlin:${Versions.tinyLog}")
+    implementation("org.tinylog:tinylog-impl:${Versions.tinyLog}")
 
-    testImplementation(Libs.jUnit5Api)
-    testRuntimeOnly(Libs.jUnit5Engine)
-    testRuntimeOnly(Libs.jUnit5Vintage)
-    androidTestImplementation(Libs.testExtJUnit)
-    testImplementation(Libs.mockk)
-    testImplementation(Libs.assertJCore)
-    androidTestImplementation(Libs.assertJCore)
-    androidTestImplementation(Libs.testEspressoCore)
-    androidTestImplementation(Libs.composeUiTestJUnit4)
-    debugImplementation(Libs.composeUiTooling)
-    testImplementation(Libs.kotlinxCoroutinesTest)
+    testImplementation("android.arch.core:core-testing:1.1.1") // Required to use androidx.arch.core.executor.testing.InstantTaskExecutorRule in ViewModel unit tests
+    testImplementation("io.insert-koin:koin-test-junit5:${Versions.koin}")
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("org.assertj:assertj-core:${Versions.assertJ}")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${Versions.jUnit5}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${Versions.jUnit5}")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:${Versions.jUnit5}")
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.compose}")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0") // Espresso (needed for CounterIdlingResource)
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
+    androidTestImplementation("androidx.test:core-ktx:1.4.0")
+    androidTestImplementation("io.insert-koin:koin-test-junit4:${Versions.koin}")
+    androidTestImplementation("org.assertj:assertj-core:${Versions.assertJ}")
 }
 
 // For jUnit5 tests

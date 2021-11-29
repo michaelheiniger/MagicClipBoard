@@ -12,14 +12,31 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.tinylog.kotlin.Logger
 
 class InMemoryLocalStore(
     private val ioDispatcher: CoroutineDispatcher,
     initialItems: Set<McbItem>
 ) : LocalStore {
 
+    init {
+        Logger.info { "Store loaded with ${initialItems.size} items" }
+    }
+
     private val mutex = Mutex()
     private val itemsStateFlow = MutableStateFlow(initialItems.map { item -> item.id to item }.toMap())
+
+    suspend fun initializeWith(items: Set<McbItem>) {
+        withContext(ioDispatcher) {
+            mutex.withLock { itemsStateFlow.value = items.map { item -> item.id to item }.toMap() }
+        }
+    }
+
+    suspend fun clearAll() {
+        withContext(ioDispatcher) {
+            mutex.withLock { itemsStateFlow.value = emptyMap() }
+        }
+    }
 
     override suspend fun addItem(item: McbItem) {
         withContext(ioDispatcher) {

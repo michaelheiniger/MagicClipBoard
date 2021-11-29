@@ -9,6 +9,8 @@ import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
 import ch.qscqlmpa.magicclipboard.data.store.local.InMemoryLocalStore
 import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 import ch.qscqlmpa.magicclipboard.debugClipBoardItems
+import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
+import ch.qscqlmpa.magicclipboard.idlingresource.StubIdlingResource
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
@@ -16,11 +18,15 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-private val ioDispatcherName = named("io")
+val ioDispatcherName = named("io")
 
 val appModule = module {
     single(qualifier = ioDispatcherName) { Dispatchers.IO }
     single { androidContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager }
+}
+
+val idlingResourceModule = module {
+    single<McbIdlingResource> { StubIdlingResource() }
 }
 
 val localStoreModule = module {
@@ -38,5 +44,5 @@ val usecasesModule = module {
 }
 
 val viewModelsModule = module {
-    viewModel { MagicClipboardViewModel(get(), get(), get()) }
+    viewModel { MagicClipboardViewModel(get(), get(), get(), get()) }
 }

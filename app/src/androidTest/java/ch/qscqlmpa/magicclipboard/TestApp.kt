@@ -1,26 +1,20 @@
 package ch.qscqlmpa.magicclipboard
 
-import android.app.Application
 import ch.qscqlmpa.magicclipboard.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
 
-open class App : Application() {
+class TestApp : App() {
 
-    override fun onCreate() {
-        super.onCreate()
-        setupKoin()
-    }
-
-    open fun setupKoin() {
+    override fun setupKoin() {
         startKoin {
             androidLogger()
-            androidContext(this@App)
+            androidContext(this@TestApp)
             modules(
                 appModule,
-                idlingResourceModule,
-                localStoreModule,
+                testIdlingResourceModule,
+                testLocalStoreModule,
                 usecasesModule,
                 repositoriesModule,
                 viewModelsModule
