@@ -9,6 +9,7 @@ import ch.qscqlmpa.magicclipboard.data.store.local.InMemoryLocalStore
 import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -22,9 +23,11 @@ abstract class BaseE2eTest {
 
     private lateinit var res: Resources
 
-    lateinit var app: TestApp
+    private lateinit var app: TestApp
 
     private lateinit var inMemoryLocalStore: InMemoryLocalStore
+
+    private lateinit var idlingResource: IdlingResourceAdapter
 
     @Before
     fun setup() {
@@ -32,11 +35,30 @@ abstract class BaseE2eTest {
         res = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
         inMemoryLocalStore = app.get<LocalStore>() as InMemoryLocalStore
-        app.get<McbIdlingResource>().increment("Setup LocalStore with test data")
+        idlingResource = IdlingResourceAdapter(app.get())
+        testRule.registerIdlingResource(idlingResource)
         runBlocking { inMemoryLocalStore.initializeWith(clipBoardItems.toSet()) }
+    }
+
+    @After
+    fun tearDown() {
+        testRule.unregisterIdlingResource(idlingResource)
     }
 
     protected fun getString(resource: Int): String {
         return res.getString(resource)
+    }
+}
+
+class IdlingResourceAdapter(private val idlingResource: McbIdlingResource) : androidx.compose.ui.test.IdlingResource {
+    override val isIdleNow: Boolean
+        get() = idlingResource.isIdleNow()
+
+    fun increment(reason: String) {
+        idlingResource.increment(reason)
+    }
+
+    fun decrement(reason: String) {
+        idlingResource.decrement(reason)
     }
 }
