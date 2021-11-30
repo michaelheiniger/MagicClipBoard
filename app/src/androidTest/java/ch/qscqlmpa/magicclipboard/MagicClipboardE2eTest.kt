@@ -29,6 +29,18 @@ class MagicClipboardE2eTest : BaseE2eTest() {
     }
 
     @Test
+    fun itemsDeletedAreNoLongerShownInTheList() {
+        testRule.onNodeWithText("[item 1]").assertExists().assertIsDisplayed()
+
+        testRule.onNodeWithTag("${UiTags.clipboardItem}_${idItem1.value}")
+            .performGesture { swipeLeft() }
+            .assertDoesNotExist() // Required to somehow complete the swipe...
+
+        testRule.onNodeWithText("[item 1]").assertDoesNotExist()
+        testRule.onNodeWithTag(UiTags.snackbarText).assertExists()
+    }
+
+    @Test
     fun setDeviceClipboardAndPasteItInMagicClipboard() {
         // Check that there is only one item "item 3"
         testRule.onNodeWithTag(UiTags.clipboardItemList)
@@ -39,6 +51,9 @@ class MagicClipboardE2eTest : BaseE2eTest() {
         // Copy item 3 into device clipboard
         testRule.onNodeWithTag("${UiTags.clipboardItem}_${idItem3.value}_copyToDevice")
             .performClick()
+        testRule.onNodeWithTag(UiTags.snackbarText)
+            .assertExists()
+            .assertTextContains(getString(R.string.item_pasted_in_device_clipboard))
 
         // Paste value of device clipboard into MagicClipboard
         testRule.onNodeWithTag(UiTags.pasteToMagicClipboard).performClick()

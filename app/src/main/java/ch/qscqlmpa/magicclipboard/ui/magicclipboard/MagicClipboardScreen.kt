@@ -150,10 +150,7 @@ fun MagicClipboardBody(
         val onDeleteItemState by rememberUpdatedState(onDeleteItem)
         val onMessageDismissStateState by rememberUpdatedState(onMessageDismissState)
 
-        // Effect running in a coroutine that displays the Snackbar on the screen
-        // If there's a change to messageText, actionText or scaffoldState,
-        // the previous effect will be cancelled and a new one will start with the new values
-        LaunchedEffect(messageText, actionText, scaffoldState) {
+        LaunchedEffect(message.messageId, scaffoldState) {
             val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
                 message = messageText,
                 actionLabel = actionText
