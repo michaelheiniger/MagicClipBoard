@@ -3,7 +3,12 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.R
-import ch.qscqlmpa.magicclipboard.clipboard.*
+import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
+import ch.qscqlmpa.magicclipboard.clipboard.McbItem
+import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.QrCodeUsecase
 import ch.qscqlmpa.magicclipboard.data.Result
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.launch
@@ -85,6 +90,7 @@ class MagicClipboardViewModel(
     private val magicClipboardRepository: MagicClipboardRepository,
     private val deviceClipboardUsecases: DeviceClipboardUsecases,
     private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
+    private val qrCodeUsecase: QrCodeUsecase,
     private val idlingResource: McbIdlingResource
 ) : BaseViewModel() {
 
@@ -160,6 +166,12 @@ class MagicClipboardViewModel(
                 itemId = item.id
             )
             it.copy(messages = it.messages + message)
+        }
+    }
+
+    fun onPasteFromQrCode(value: String) {
+        viewModelScope.launch {
+            qrCodeUsecase.pasteValueToMcb(value)
         }
     }
 

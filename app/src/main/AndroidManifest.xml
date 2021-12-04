@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ch.qscqlmpa.magicclipboard">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.any" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -21,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.qrcodescanner.QrCodeScannerActivity"
+            android:exported="true"
+            android:label=""
+            android:theme="@style/Theme.MagicClipBoard" />
     </application>
 
 </manifest>

@@ -21,6 +21,9 @@ abstract class BaseE2eTest {
     @get:Rule
     val testRule = createAndroidComposeRule<MainActivity>()
 
+    @get:Rule
+    val animationsRule = DisableAnimationsRule()
+
     private lateinit var res: Resources
 
     private lateinit var app: TestApp

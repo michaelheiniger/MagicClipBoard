@@ -1,5 +1,6 @@
-package ch.qscqlmpa.magicclipboard.clipboard
+package ch.qscqlmpa.magicclipboard.clipboard.usecases
 
+import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.data.Result
 import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 

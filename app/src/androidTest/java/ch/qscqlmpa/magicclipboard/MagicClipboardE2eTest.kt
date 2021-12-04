@@ -49,14 +49,16 @@ class MagicClipboardE2eTest : BaseE2eTest() {
             .assertCountEquals(1)
 
         // Copy item 3 into device clipboard
-        testRule.onNodeWithTag("${UiTags.clipboardItem}_${idItem3.value}_copyToDevice")
-            .performClick()
+        testRule.onNodeWithTag("${UiTags.clipboardItem}_${idItem3.value}_copyToDevice").performClick()
         testRule.onNodeWithTag(UiTags.snackbarText)
             .assertExists()
             .assertTextContains(getString(R.string.item_pasted_in_device_clipboard))
+        testRule.onNodeWithTag(UiTags.snackbarAction).performClick()
 
         // Paste value of device clipboard into MagicClipboard
-        testRule.onNodeWithTag(UiTags.pasteToMagicClipboard).performClick()
+        testRule.onNodeWithTag(UiTags.mainFab).performClick()
+
+        testRule.onNodeWithTag(UiTags.pasteFromDeviceClipboard).performClick()
 
         // New item is at the top of the list (list is sorted on creationDate DESC)
         testRule.onNodeWithTag(UiTags.clipboardItemList).performScrollToIndex(0)

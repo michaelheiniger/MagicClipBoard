@@ -41,6 +41,7 @@ android {
 
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 
     composeOptions {
@@ -71,6 +72,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.tinylog:tinylog-api-kotlin:${Versions.tinyLog}")
     implementation("org.tinylog:tinylog-impl:${Versions.tinyLog}")
+    val cameraxVersion = "1.0.0-beta07"
+    implementation("androidx.camera:camera-camera2:$cameraxVersion") // Required despite what's dependency-analysis (README) is saying
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:1.0.0-alpha14")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.1.0")
 
     testImplementation("android.arch.core:core-testing:1.1.1") // Required to use androidx.arch.core.executor.testing.InstantTaskExecutorRule in ViewModel unit tests
     testImplementation("io.insert-koin:koin-test-junit5:${Versions.koin}")

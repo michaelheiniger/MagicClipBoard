@@ -15,10 +15,20 @@
     <string name="item_pasted_in_device_clipboard">Value pasted in device clipboard</string>
     <string name="share_clipboard_item_cd">Share item value</string>
     <string name="paste_value_from_device_clipboard_cd">Paste value from device clipboard into MagicClipboard</string>
-    <string name="paste_into_magic_cliboard">Paste</string>
+    <string name="paste_from_device_clipboard">Paste from clipboard</string>
     <string name="item_pasted_in_magic_clipbaord">Item pasted in MagicClipboard !</string>
     <string name="value_as_qr_code_cd">Value as QR code</string>
     <string name="value_as_qr_code">Scan the QR code to get the value !</string>
     <string name="close">Close</string>
     <string name="show_value_as_qr_code_cd">Show value as QR code</string>
+    <string name="scan_qr_code_hint">Read value from QR code</string>
+    <string name="camera_permission_denied">Camera permission denied</string>
+    <string name="qr_code_camera_permission_hint">Camera permission needed to scan QR code</string>
+    <string name="qr_code_decoding_failed">QR code decoding failed</string>
+    <string name="error_starting_camera">Camera error</string>
+    <string name="error_scanning_qr_code">Error scanning QR code</string>
+    <string name="no">No</string>
+    <string name="yes">yes</string>
+    <string name="paste_from_qr_code">Paste from QR code</string>
+    <string name="paste">Paste</string>
 </resources>

@@ -18,7 +18,10 @@ fun DefaultSnackbar(
                 modifier = Modifier.padding(16.dp),
                 action = {
                     data.actionLabel?.let { actionLabel ->
-                        TextButton(onClick = { snackbarHostState.currentSnackbarData?.performAction() }) {
+                        TextButton(
+                            modifier = Modifier.testTag(UiTags.snackbarAction),
+                            onClick = { snackbarHostState.currentSnackbarData?.performAction() }
+                        ) {
                             Text(
                                 text = actionLabel,
                                 color = SnackbarDefaults.primaryActionColor

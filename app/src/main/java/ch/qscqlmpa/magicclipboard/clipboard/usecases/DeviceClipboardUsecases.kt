@@ -1,8 +1,10 @@
-package ch.qscqlmpa.magicclipboard.clipboard
+package ch.qscqlmpa.magicclipboard.clipboard.usecases
 
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import ch.qscqlmpa.magicclipboard.clipboard.McbItem
+import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 
 class DeviceClipboardUsecases(
