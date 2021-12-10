@@ -237,9 +237,7 @@ fun MagicClipboardBody(
             )
             if (snackbarResult == SnackbarResult.ActionPerformed) {
                 when (message) {
-                    is ItemMessage.Deletion -> {
-                        if (!message.deletionSuccessful) onDeleteItemState(message.itemId) // retry
-                    }
+                    is ItemMessage.Deletion -> onDeleteItemState(message.itemId) // retry
                     is ItemMessage.ItemLoadedInDeviceClipboard -> {
                         // Nothing to do
                     }

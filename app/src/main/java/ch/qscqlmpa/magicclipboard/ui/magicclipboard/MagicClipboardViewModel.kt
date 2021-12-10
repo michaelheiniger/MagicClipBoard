@@ -37,10 +37,9 @@ sealed interface ItemMessage : Message {
 
     data class Deletion(
         override val messageId: Long,
-        @StringRes override val textId: Int,
-        @StringRes override val actionTextId: Int? = null,
-        override val itemId: McbItemId,
-        val deletionSuccessful: Boolean
+        @StringRes override val textId: Int = R.string.error_deleting_item,
+        @StringRes override val actionTextId: Int? = R.string.retry,
+        override val itemId: McbItemId
     ) : ItemMessage
 
     data class ItemLoadedInDeviceClipboard(
@@ -92,30 +91,19 @@ class MagicClipboardViewModel(
         viewModelScope.launch(
             beforeLaunch = { idlingResource.increment("Deleting item $itemId") }
         ) {
-            val result = deleteClipboardItemUsecase.deleteItem(itemId)
-            viewModelState.update {
-                val message = when (result) {
-                    is Result.Error -> {
-                        ItemMessage.Deletion(
+            when (deleteClipboardItemUsecase.deleteItem(itemId)) {
+                is Result.Error -> {
+                    viewModelState.update {
+                        val message = ItemMessage.Deletion(
                             messageId = UUID.randomUUID().mostSignificantBits,
-                            textId = R.string.error_deleting_item,
-                            actionTextId = R.string.retry,
                             itemId = itemId,
-                            deletionSuccessful = false
                         )
-                    }
-
-                    Result.Success -> {
-                        ItemMessage.Deletion(
-                            messageId = UUID.randomUUID().mostSignificantBits,
-                            textId = R.string.item_deleted_succesfully,
-                            actionTextId = R.string.ok,
-                            itemId = itemId,
-                            deletionSuccessful = true
-                        )
+                        it.copy(messages = it.messages + message)
                     }
                 }
-                it.copy(messages = it.messages + message)
+                Result.Success -> {
+                    // Nothing to do
+                }
             }
         }
     }
