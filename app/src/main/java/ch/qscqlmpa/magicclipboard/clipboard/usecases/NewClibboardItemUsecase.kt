@@ -3,7 +3,7 @@ package ch.qscqlmpa.magicclipboard.clipboard.usecases
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 
-class QrCodeUsecase(
+class NewClibboardItemUsecase(
     private val localStore: LocalStore
 ) {
 

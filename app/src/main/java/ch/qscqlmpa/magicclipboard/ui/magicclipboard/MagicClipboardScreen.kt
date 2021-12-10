@@ -7,12 +7,13 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -31,7 +33,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -66,14 +72,16 @@ object MagicClipboardUtils {
 private fun MagicClipboardBodyPreview() {
     MagicClipBoardTheme {
         MagicClipboardBody(
-            uiState = MagicClipboardUiState.HasItems(
+            uiState = MagicClipboardUiState(
                 items = debugClipBoardItems.toList(),
+                newItemsAdded = false,
                 isLoading = false,
-                messages = emptyList()
+                messages = emptyList(),
+                deviceClipboardValue = "Here is an example of the value from device clipboard"
             ),
             onDeleteItem = {},
-            onCopyItemToDeviceClipboard = {},
-            onPasteFromDeviceClipboard = {},
+            onPasteItemToDeviceClipboard = {},
+            onPasteValueFromDeviceClipboardToMcb = {},
             onPasteFromQrCode = {},
             onMessageDismissState = {}
         )
@@ -86,10 +94,10 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
     MagicClipboardBody(
         uiState = uiState,
         onDeleteItem = { itemId -> viewModel.onDeleteItem(itemId) },
-        onMessageDismissState = viewModel::messageShown,
-        onPasteFromDeviceClipboard = viewModel::onPasteToMagicClipboard,
-        onCopyItemToDeviceClipboard = viewModel::onCopyItemToDeviceClipboard,
-        onPasteFromQrCode = viewModel::onPasteFromQrCode
+        onPasteValueFromDeviceClipboardToMcb = viewModel::onPasteToMagicClipboard,
+        onPasteItemToDeviceClipboard = viewModel::onPasteItemToDeviceClipboard,
+        onPasteFromQrCode = viewModel::onPasteFromQrCode,
+        onMessageDismissState = viewModel::messageShown
     )
 }
 
@@ -148,8 +156,8 @@ private fun ClipboardFabIcon(
 fun MagicClipboardBody(
     uiState: MagicClipboardUiState,
     onDeleteItem: (McbItemId) -> Unit,
-    onCopyItemToDeviceClipboard: (McbItem) -> Unit,
-    onPasteFromDeviceClipboard: () -> Unit,
+    onPasteItemToDeviceClipboard: (McbItem) -> Unit,
+    onPasteValueFromDeviceClipboardToMcb: (String) -> Unit,
     onPasteFromQrCode: (String) -> Unit,
     onMessageDismissState: (Long) -> Unit
 ) {
@@ -169,13 +177,20 @@ fun MagicClipboardBody(
             ) {
                 if (uiState.isLoading) LoadingSpinner()
                 else {
-                    when (uiState) {
-                        is MagicClipboardUiState.NoItems -> NoItems()
-                        is MagicClipboardUiState.HasItems -> {
+                    if (uiState.deviceClipboardValue != null) {
+                        DeviceClipboardValue(
+                            deviceClipboardValue = uiState.deviceClipboardValue,
+                            onPasteValueToMcb = onPasteValueFromDeviceClipboardToMcb
+                        )
+                    }
+                    when (uiState.items.isEmpty()) {
+                        true -> NoItems()
+                        false -> {
                             ClipboardItemList(
                                 items = uiState.items,
+                                newItemsAdded = uiState.newItemsAdded,
                                 onDeleteItem = { item -> onDeleteItem(item) },
-                                onCopyItemToDeviceClipboard = onCopyItemToDeviceClipboard
+                                onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
                             )
                         }
                     }
@@ -184,6 +199,7 @@ fun MagicClipboardBody(
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
             PasteFab(
+                deviceClipboardValue = uiState.deviceClipboardValue,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 10.dp, end = 10.dp)
@@ -195,7 +211,7 @@ fun MagicClipboardBody(
                             offsetY += dragAmount.y
                         }
                     },
-                onPasteFromDeviceClipboard = onPasteFromDeviceClipboard,
+                onPasteFromDeviceClipboard = onPasteValueFromDeviceClipboardToMcb,
                 onPasteFromQrCode = onPasteFromQrCode
             )
         }
@@ -227,8 +243,6 @@ fun MagicClipboardBody(
                     is ItemMessage.ItemLoadedInDeviceClipboard -> {
                         // Nothing to do
                     }
-                    is ItemMessage.ItemPastedInMagicClipboard -> {
-                    }
                 }
             }
             // Once the message is displayed and dismissed, notify the ViewModel
@@ -238,11 +252,58 @@ fun MagicClipboardBody(
 }
 
 @Composable
+private fun DeviceClipboardValue(
+    modifier: Modifier = Modifier,
+    deviceClipboardValue: String,
+    onPasteValueToMcb: (String) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(5.dp))
+            .background(color = MaterialTheme.colors.secondary)
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        val label = stringResource(R.string.valueInDeviceClipboard)
+        Text(
+            modifier = Modifier.weight(1f),
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(label)
+                }
+                append(text = " $deviceClipboardValue")
+            },
+            color = Color.White,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2
+        )
+        IconButton(
+            modifier = Modifier.defaultMinSize(24.dp),
+            onClick = { onPasteValueToMcb(deviceClipboardValue) }
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_baseline_content_paste_24),
+                tint = Color.White,
+                contentDescription = stringResource(R.string.paste_value_from_device_clipboard_cd)
+            )
+        }
+    }
+}
+
+@Composable
 private fun PasteFab(
     modifier: Modifier = Modifier,
-    onPasteFromDeviceClipboard: () -> Unit,
+    deviceClipboardValue: String?,
+    onPasteFromDeviceClipboard: (String) -> Unit,
     onPasteFromQrCode: (String) -> Unit
 ) {
+    fun buildFabItems(deviceClipboardValue: String?): List<ClipboardFabItem> {
+        val fabItems = mutableListOf<ClipboardFabItem>(PasteFromQrCode)
+        if (deviceClipboardValue != null) fabItems.add(0, PasteFromDeviceClipboard)
+        return fabItems.toList()
+    }
+
     var state by remember { mutableStateOf(MultiFabState.COLLAPSED) }
     val launcher = qrCodeScanner(onQrCodeScan = onPasteFromQrCode)
 
@@ -250,15 +311,12 @@ private fun PasteFab(
         MultiFloatingActionButton(
             mainFabText = R.string.paste,
             mainFabIcon = R.drawable.ic_baseline_content_paste_24,
-            items = listOf(
-                PasteFromDeviceClipboard,
-                PasteFromQrCode
-            ),
+            items = buildFabItems(deviceClipboardValue),
             targetState = state,
             stateChanged = { targetState -> state = targetState },
             onFabItemClicked = { item ->
                 when (item) {
-                    PasteFromDeviceClipboard -> onPasteFromDeviceClipboard()
+                    PasteFromDeviceClipboard -> if (deviceClipboardValue != null) onPasteFromDeviceClipboard(deviceClipboardValue)
                     PasteFromQrCode -> launcher.launch(Unit)
                 }
                 state = MultiFabState.COLLAPSED
@@ -282,10 +340,15 @@ private fun NoItems(modifier: Modifier = Modifier) {
 @Composable
 private fun ClipboardItemList(
     items: List<McbItem>,
+    newItemsAdded: Boolean,
     onDeleteItem: (McbItemId) -> Unit,
-    onCopyItemToDeviceClipboard: (McbItem) -> Unit
+    onPasteItemToDeviceClipboard: (McbItem) -> Unit
 ) {
+    val listState = rememberLazyListState()
+    if (newItemsAdded) LaunchedEffect(key1 = items) { listState.animateScrollToItem(0) }
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxSize()
             .animateContentSize()
@@ -296,7 +359,7 @@ private fun ClipboardItemList(
             ClipboardItem(
                 item = item,
                 onDeleteItem = onDeleteItem,
-                onCopyItemToDeviceClipboard = onCopyItemToDeviceClipboard
+                onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
             )
         }
     }
@@ -306,7 +369,7 @@ private fun ClipboardItemList(
 private fun ClipboardItem(
     item: McbItem,
     onDeleteItem: (McbItemId) -> Unit,
-    onCopyItemToDeviceClipboard: (McbItem) -> Unit
+    onPasteItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     val dismissState = rememberDismissState()
     if (dismissState.isDismissed(DismissDirection.EndToStart)) onDeleteItem(item.id)
@@ -354,7 +417,7 @@ private fun ClipboardItem(
             ClipboardItemContent(
                 item = item,
                 sliding = dismissState.dismissDirection != null,
-                onCopyItemToDeviceClipboard = onCopyItemToDeviceClipboard
+                onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
             )
         }
     )
@@ -364,7 +427,7 @@ private fun ClipboardItem(
 private fun ClipboardItemContent(
     item: McbItem,
     sliding: Boolean,
-    onCopyItemToDeviceClipboard: (McbItem) -> Unit
+    onPasteItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     val itemCd = stringResource(R.string.clipboard_item_cd, item.value) // Can't inline: composable
     val context = LocalContext.current
@@ -414,7 +477,7 @@ private fun ClipboardItemContent(
                 }
                 IconButton(
                     modifier = Modifier.testTag("${UiTags.clipboardItem}_${item.id.value}_copyToDevice"),
-                    onClick = { onCopyItemToDeviceClipboard(item) }
+                    onClick = { onPasteItemToDeviceClipboard(item) }
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_baseline_content_copy_24),

@@ -4,29 +4,21 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
-import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
-import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 
 class DeviceClipboardUsecases(
     private val context: Context,
-    private val clipboardManager: ClipboardManager,
-    private val localStore: LocalStore
+    private val clipboardManager: ClipboardManager
 ) {
 
     fun pasteItemIntoDeviceClipboard(item: McbItem) {
         clipboardManager.setPrimaryClip(ClipData.newPlainText(item.label, item.value))
     }
 
-    suspend fun pasteItemFromDeviceClipboard(): McbItemId? {
+    fun getDeviceClipboardValue(): String? {
         val clip = clipboardManager.primaryClip
         return if (clip != null) {
             val clipItem = clip.getItemAt(0)
-            val item = McbItem(
-                label = "", // TODO: What value should be set for the label ?!?
-                value = clipItem.coerceToText(context).toString()
-            )
-            localStore.addItem(item)
-            item.id
+            clipItem.coerceToText(context).toString()
         } else null
     }
 }

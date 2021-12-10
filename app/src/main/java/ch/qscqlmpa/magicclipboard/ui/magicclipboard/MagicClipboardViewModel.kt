@@ -8,7 +8,7 @@ import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
-import ch.qscqlmpa.magicclipboard.clipboard.usecases.QrCodeUsecase
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClibboardItemUsecase
 import ch.qscqlmpa.magicclipboard.data.Result
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.launch
@@ -18,21 +18,13 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
-sealed interface MagicClipboardUiState {
-    val isLoading: Boolean
-    val messages: List<Message>
-
-    data class NoItems(
-        override val isLoading: Boolean,
-        override val messages: List<Message>
-    ) : MagicClipboardUiState
-
-    data class HasItems(
-        val items: List<McbItem>,
-        override val isLoading: Boolean,
-        override val messages: List<Message>
-    ) : MagicClipboardUiState
-}
+data class MagicClipboardUiState(
+    val items: List<McbItem>,
+    val newItemsAdded: Boolean,
+    val isLoading: Boolean,
+    val messages: List<Message>,
+    val deviceClipboardValue: String?,
+)
 
 sealed interface Message {
     val messageId: Long
@@ -57,40 +49,30 @@ sealed interface ItemMessage : Message {
         @StringRes override val actionTextId: Int? = null,
         override val itemId: McbItemId,
     ) : ItemMessage
-
-    data class ItemPastedInMagicClipboard(
-        override val messageId: Long,
-        @StringRes override val textId: Int,
-        @StringRes override val actionTextId: Int? = null,
-        override val itemId: McbItemId,
-    ) : ItemMessage
 }
 
 private data class MagicClipboardViewModelState(
-    val items: List<McbItem> = emptyList(),
+    val previousItemsState: List<McbItem> = emptyList(),
+    val currentItemsState: List<McbItem> = emptyList(),
     val isLoading: Boolean = false,
-    val messages: List<Message> = emptyList()
+    val messages: List<Message> = emptyList(),
+    val deviceClipboardValue: String? = null
 ) {
     fun toUiState(): MagicClipboardUiState =
-        if (items.isEmpty()) {
-            MagicClipboardUiState.NoItems(
-                isLoading = isLoading,
-                messages = messages
-            )
-        } else {
-            MagicClipboardUiState.HasItems(
-                items = items,
-                isLoading = isLoading,
-                messages = messages
-            )
-        }
+        MagicClipboardUiState(
+            items = currentItemsState,
+            newItemsAdded = currentItemsState.size > previousItemsState.size,
+            isLoading = isLoading,
+            messages = messages,
+            deviceClipboardValue = deviceClipboardValue
+        )
 }
 
 class MagicClipboardViewModel(
     private val magicClipboardRepository: MagicClipboardRepository,
     private val deviceClipboardUsecases: DeviceClipboardUsecases,
     private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
-    private val qrCodeUsecase: QrCodeUsecase,
+    private val newClibboardItemUsecase: NewClibboardItemUsecase,
     private val idlingResource: McbIdlingResource
 ) : BaseViewModel() {
 
@@ -138,25 +120,15 @@ class MagicClipboardViewModel(
         }
     }
 
-    fun onPasteToMagicClipboard() {
+    fun onPasteToMagicClipboard(value: String) {
         viewModelScope.launch(
             beforeLaunch = { idlingResource.increment("Pasting to MagicClipboard") }
         ) {
-            deviceClipboardUsecases.pasteItemFromDeviceClipboard()?.let { newItemId ->
-                viewModelState.update {
-                    val message = ItemMessage.ItemPastedInMagicClipboard(
-                        messageId = UUID.randomUUID().mostSignificantBits,
-                        textId = R.string.item_pasted_in_magic_clipbaord,
-                        actionTextId = R.string.ok,
-                        itemId = newItemId
-                    )
-                    it.copy(messages = it.messages + message)
-                }
-            }
+            newClibboardItemUsecase.pasteValueToMcb(value)
         }
     }
 
-    fun onCopyItemToDeviceClipboard(item: McbItem) {
+    fun onPasteItemToDeviceClipboard(item: McbItem) {
         deviceClipboardUsecases.pasteItemIntoDeviceClipboard(item)
         viewModelState.update {
             val message = ItemMessage.ItemLoadedInDeviceClipboard(
@@ -165,13 +137,16 @@ class MagicClipboardViewModel(
                 actionTextId = R.string.ok,
                 itemId = item.id
             )
-            it.copy(messages = it.messages + message)
+            it.copy(
+                deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue(), // Device clipboard value has changed
+                messages = it.messages + message
+            )
         }
     }
 
     fun onPasteFromQrCode(value: String) {
         viewModelScope.launch {
-            qrCodeUsecase.pasteValueToMcb(value)
+            newClibboardItemUsecase.pasteValueToMcb(value)
         }
     }
 
@@ -190,10 +165,17 @@ class MagicClipboardViewModel(
         idlingResource.increment("Loading Item list")
         observeCliboardItemsJob = viewModelScope.launch {
             magicClipboardRepository.observeItems().collect { items ->
-                viewModelState.update { it.copy(items = items, isLoading = false) }
+                viewModelState.update {
+                    it.copy(
+                        previousItemsState = it.currentItemsState,
+                        currentItemsState = items,
+                        isLoading = false
+                    )
+                }
                 idlingResource.decrement("Item list updated")
             }
         }
+        viewModelState.update { it.copy(deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue()) }
     }
 
     override fun onStop() {

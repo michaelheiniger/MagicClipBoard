@@ -31,4 +31,5 @@
     <string name="yes">yes</string>
     <string name="paste_from_qr_code">Paste from QR code</string>
     <string name="paste">Paste</string>
+    <string name="valueInDeviceClipboard">Device clipboard:</string>
 </resources>

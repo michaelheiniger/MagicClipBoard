@@ -6,7 +6,7 @@ import ch.qscqlmpa.magicclipboard.BuildConfig
 import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
-import ch.qscqlmpa.magicclipboard.clipboard.usecases.QrCodeUsecase
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClibboardItemUsecase
 import ch.qscqlmpa.magicclipboard.data.store.local.InMemoryLocalStore
 import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
 import ch.qscqlmpa.magicclipboard.debugClipBoardItems
@@ -40,9 +40,9 @@ val repositoriesModule = module {
 }
 
 val usecasesModule = module {
-    single { DeviceClipboardUsecases(androidContext(), get(), get()) }
+    single { DeviceClipboardUsecases(androidContext(), get()) }
     single { DeleteClipboardItemUsecase(get()) }
-    single { QrCodeUsecase(get()) }
+    single { NewClibboardItemUsecase(get()) }
 }
 
 val viewModelsModule = module {
