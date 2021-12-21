@@ -24,7 +24,7 @@
     <string name="paste_from_qr_code">Paste from QR code</string>
     <string name="paste_value_from_device_clipboard_cd">Paste value from device clipboard into MagicClipboard</string>
     <string name="qr_code_camera_permission_hint">Camera permission needed to scan QR code</string>
-    <string name="qr_code_decoding_failed">QR code decoding failed</string>
+    <string name="qr_code_decoding_failed">QR code decoding failed, try again ?</string>
     <string name="retry">Retry</string>
     <string name="scan_qr_code_hint">Read value from QR code</string>
     <string name="share_clipboard_item_cd">Share item value</string>
