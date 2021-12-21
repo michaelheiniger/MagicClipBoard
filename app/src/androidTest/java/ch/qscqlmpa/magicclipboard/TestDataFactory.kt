@@ -29,121 +29,115 @@ val idItem20 = McbItemId(UUID.fromString("1bc0ffd7-7e8e-49cb-a0c8-cb32b8e8f43d")
 val item1 = McbItem(
     id = idItem1,
     value = "[item 1]",
-    label = "item 1",
     creationDate = LocalDateTime.now().minusSeconds(10)
 )
 val item2 = McbItem(
     id = idItem2,
     value = "[item 2] which is a bit longer",
-    label = "item 2",
     creationDate = LocalDateTime.now().minusMinutes(3)
 )
 val item3 = McbItem(
     id = idItem3,
     value = "[item 3] which is a much longeeeeeeeeeeeeeeeeeer item\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada",
-    label = "item 3",
-    creationDate = LocalDateTime.now().minusHours(1)
+    creationDate = LocalDateTime.of(
+        LocalDateTime.now().year,
+        LocalDateTime.now().month,
+        LocalDateTime.now().dayOfMonth,
+        13,
+        45,
+        24
+    )
 )
 val item4 = McbItem(
     id = idItem4,
     value = "[item 4]",
-    label = "item 4",
     creationDate = LocalDateTime.now().minusHours(2)
 )
 val item5 = McbItem(
     id = idItem5,
     value = "[item 5]",
-    label = "item 5",
-    creationDate = LocalDateTime.now().minusDays(5)
+    creationDate = LocalDateTime.of(
+        1989,
+        7,
+        26,
+        19,
+        55,
+        0
+    )
 )
 val item6 = McbItem(
     id = idItem6,
     value = "[item 6]",
-    label = "item 6",
     creationDate = LocalDateTime.now().minusDays(6)
 )
 val item7 = McbItem(
     id = idItem7,
     value = "[item 7]",
-    label = "item 7",
     creationDate = LocalDateTime.now().minusDays(7)
 )
 val item8 = McbItem(
     id = idItem8,
     value = "[item 8]",
-    label = "item 8",
     creationDate = LocalDateTime.now().minusDays(8)
 )
 val item9 = McbItem(
     id = idItem9,
     value = "[item 9]",
-    label = "item 9",
     creationDate = LocalDateTime.now().minusDays(9)
 )
 val item10 = McbItem(
     id = idItem10,
     value = "[item 10]",
-    label = "item 10",
     creationDate = LocalDateTime.now().minusDays(10)
 )
 val item11 = McbItem(
     id = idItem11,
     value = "[item 11]",
-    label = "item 11",
     creationDate = LocalDateTime.now().minusDays(1)
 )
 val item12 = McbItem(
     id = idItem12,
     value = "[item 12] which is a bit longer",
-    label = "item 12",
     creationDate = LocalDateTime.now().minusDays(1)
 )
 val item13 = McbItem(
     id = idItem13,
     value = "[item 13] which is a much longeeeeeeeeeeeeeeeeeer item\n bla bidi bla bla blaaaa didi dudu dada",
-    label = "item 13",
     creationDate = LocalDateTime.now().minusDays(13)
 )
 val item14 = McbItem(
     id = idItem14,
     value = "[item 14]",
-    label = "item 14",
     creationDate = LocalDateTime.now().minusDays(1)
 )
 val item15 = McbItem(
     id = idItem15,
     value = "[item 15]",
-    label = "item 15",
     creationDate = LocalDateTime.now().minusDays(15)
 )
 val item16 = McbItem(
     id = idItem16,
     value = "[item 16]",
-    label = "item 16",
     creationDate = LocalDateTime.now().minusDays(16)
 )
 val item17 = McbItem(
     id = idItem17,
     value = "[item 17]",
-    label = "item 17",
     creationDate = LocalDateTime.now().minusDays(17)
 )
 val item18 = McbItem(
     id = idItem18,
     value = "[item 18]",
-    label = "item 18",
     creationDate = LocalDateTime.now().minusDays(18)
 )
 val item19 = McbItem(
     id = idItem19,
     value = "[item 19]",
-    label = "item 19",
     creationDate = LocalDateTime.now().minusDays(19)
 )
 val item20 = McbItem(
     id = idItem20,
     value = "[item 20]",
-    label = "item 20",
     creationDate = LocalDateTime.now().minusDays(20)
 )
 

@@ -14,10 +14,12 @@ class TestApp : App() {
             modules(
                 appModule,
                 testIdlingResourceModule,
-                testLocalStoreModule,
+                localSessionModule,
+                localStoreModule,
                 usecasesModule,
                 repositoriesModule,
-                viewModelsModule
+                viewModelsModule,
+                navigationModule
             )
         }
     }

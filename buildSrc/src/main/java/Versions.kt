@@ -1,6 +1,6 @@
 object Versions {
     const val appVersionName = "1.0.0"
-    const val appVersionCode = 1
+    const val appVersionCode = 5
 
     const val compileSdk = 31
     const val targetSdk = 31
@@ -15,9 +15,12 @@ object Versions {
     const val androidJUnit5Plugin = "1.7.1.1"
 
     // Libraries
-    const val compose = "1.0.3"
-    const val koin = "3.1.4"
-    const val jUnit5 = "5.7.1"
-    const val tinyLog = "2.2.1"
+    const val androidLifecycle = "2.4.0-alpha01"
     const val assertJ = "3.20.2"
+    const val camera = "1.0.0-beta07"
+    const val compose = "1.0.3"
+    const val jUnit5 = "5.7.1"
+    const val koin = "3.1.4"
+    const val kotlinxCoroutines = "1.5.2"
+    const val tinyLog = "2.2.1"
 }

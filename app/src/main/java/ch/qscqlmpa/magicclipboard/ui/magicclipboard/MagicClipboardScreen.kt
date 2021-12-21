@@ -1,8 +1,6 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 
 import android.content.Intent
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
@@ -47,25 +45,16 @@ import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.debugClipBoardItems
-import ch.qscqlmpa.magicclipboard.ui.MagicClipboardSimpleTopBar
 import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
 import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
-import ch.qscqlmpa.magicclipboard.ui.common.LoadingSpinner
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
-import ch.qscqlmpa.magicclipboard.ui.components.multifab.MultiFabItem
-import ch.qscqlmpa.magicclipboard.ui.components.multifab.MultiFabState
-import ch.qscqlmpa.magicclipboard.ui.components.multifab.MultiFloatingActionButton
-import ch.qscqlmpa.magicclipboard.ui.qrcodescanner.QrCodeScanResult
-import ch.qscqlmpa.magicclipboard.ui.qrcodescanner.ScanQrCodeResultContract
+import ch.qscqlmpa.magicclipboard.ui.common.YesNoDialog
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
-object MagicClipboardUtils {
-    val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
-    val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -75,15 +64,16 @@ private fun MagicClipboardBodyPreview() {
             uiState = MagicClipboardUiState(
                 items = debugClipBoardItems.toList(),
                 newItemsAdded = false,
-                isLoading = false,
                 messages = emptyList(),
-                deviceClipboardValue = "Here is an example of the value from device clipboard"
+                deviceClipboardValue = "Here is an example of the value from device clipboard",
+                username = "Ned Stark"
             ),
             onDeleteItem = {},
             onPasteItemToDeviceClipboard = {},
             onPasteValueFromDeviceClipboardToMcb = {},
             onPasteFromQrCode = {},
-            onMessageDismissState = {}
+            onMessageDismissState = {},
+            onSignOut = {},
         )
     }
 }
@@ -97,59 +87,9 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
         onPasteValueFromDeviceClipboardToMcb = viewModel::onPasteToMagicClipboard,
         onPasteItemToDeviceClipboard = viewModel::onPasteItemToDeviceClipboard,
         onPasteFromQrCode = viewModel::onPasteFromQrCode,
-        onMessageDismissState = viewModel::messageShown
+        onMessageDismissState = viewModel::messageShown,
+        onSignOut = viewModel::onLogout,
     )
-}
-
-sealed class ClipboardFabItem(
-    override val id: String,
-    override val content: @Composable () -> Unit,
-    override val label: Int
-) : MultiFabItem
-
-object PasteFromDeviceClipboard : ClipboardFabItem(
-    id = UiTags.pasteFromDeviceClipboard,
-    content = @Composable {
-        ClipboardFabIcon(
-            primaryIcon = R.drawable.ic_baseline_content_paste_24,
-            secondaryIcon = R.drawable.ic_baseline_phone_android_24
-        )
-    },
-    label = R.string.paste_from_device_clipboard
-)
-
-object PasteFromQrCode : ClipboardFabItem(
-    id = UiTags.pasteFromQrCode,
-    content = @Composable {
-        ClipboardFabIcon(
-            primaryIcon = R.drawable.ic_baseline_content_paste_24,
-            secondaryIcon = R.drawable.ic_baseline_qr_code_24
-        )
-    },
-    label = R.string.paste_from_qr_code
-)
-
-@Composable
-private fun ClipboardFabIcon(
-    primaryIcon: Int,
-    secondaryIcon: Int
-) {
-    Box {
-        Icon(
-            painter = painterResource(primaryIcon),
-            tint = Color.White,
-            contentDescription = "", // TODO
-        )
-        Icon(
-            painter = painterResource(secondaryIcon),
-            tint = Color.Black,
-            contentDescription = "", // TODO
-            modifier = Modifier
-                .scale(0.7f)
-                .align(Alignment.BottomEnd)
-                .offset(12.dp, 12.dp)
-        )
-    }
 }
 
 @Composable
@@ -159,43 +99,52 @@ fun MagicClipboardBody(
     onPasteItemToDeviceClipboard: (McbItem) -> Unit,
     onPasteValueFromDeviceClipboardToMcb: (String) -> Unit,
     onPasteFromQrCode: (String) -> Unit,
-    onMessageDismissState: (Long) -> Unit
+    onMessageDismissState: (Long) -> Unit,
+    onSignOut: () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { MagicClipboardSimpleTopBar() },
+        topBar = {
+            MagicClipboardTopBar(
+                username = uiState.username,
+                onSignOut = onSignOut
+            )
+        },
         snackbarHost = { DefaultSnackbar(snackbarHostState = scaffoldState.snackbarHostState) }
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.Center
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
-                if (uiState.isLoading) LoadingSpinner()
-                else {
-                    if (uiState.deviceClipboardValue != null) {
-                        DeviceClipboardValue(
-                            deviceClipboardValue = uiState.deviceClipboardValue,
-                            onPasteValueToMcb = onPasteValueFromDeviceClipboardToMcb
+
+                if (uiState.deviceClipboardValue != null) {
+                    DeviceClipboardValue(
+                        deviceClipboardValue = uiState.deviceClipboardValue,
+                        onPasteValueToMcb = onPasteValueFromDeviceClipboardToMcb
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+                when (uiState.items.isEmpty()) {
+                    true -> NoClipboardItems()
+                    false -> {
+                        ClipboardItemList(
+                            items = uiState.items,
+                            newItemsAdded = uiState.newItemsAdded,
+                            onDeleteItem = { item -> onDeleteItem(item) },
+                            onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
                         )
-                    }
-                    when (uiState.items.isEmpty()) {
-                        true -> NoItems()
-                        false -> {
-                            ClipboardItemList(
-                                items = uiState.items,
-                                newItemsAdded = uiState.newItemsAdded,
-                                onDeleteItem = { item -> onDeleteItem(item) },
-                                onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
-                            )
-                        }
                     }
                 }
             }
+
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
             PasteFab(
@@ -250,6 +199,48 @@ fun MagicClipboardBody(
 }
 
 @Composable
+private fun MagicClipboardTopBar(
+    username: String,
+    onSignOut: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            var showSignOutDialog by remember { mutableStateOf(false) }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = username,
+                    color = MaterialTheme.colors.onPrimary
+                )
+                TextButton(onClick = {
+                    showSignOutDialog = true
+                }) {
+                    Text(
+                        text = stringResource(R.string.signOut),
+                        color = MaterialTheme.colors.onPrimary
+                    )
+                }
+            }
+            if (showSignOutDialog) {
+                val context = LocalContext.current
+                YesNoDialog(
+                    text = R.string.signOutConfirmation,
+                    onYesClick = {
+                        onSignOut()
+                        val gso = GoogleSignInOptions.Builder().build()
+                        GoogleSignIn.getClient(context, gso).signOut()
+                    },
+                    onClose = { showSignOutDialog = false }
+                )
+            }
+        }
+    )
+}
+
+@Composable
 private fun DeviceClipboardValue(
     modifier: Modifier = Modifier,
     deviceClipboardValue: String,
@@ -265,7 +256,9 @@ private fun DeviceClipboardValue(
     ) {
         val label = stringResource(R.string.valueInDeviceClipboard)
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .testTag(UiTags.deviceClipboardValue)
+                .weight(1f),
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(label)
@@ -290,41 +283,7 @@ private fun DeviceClipboardValue(
 }
 
 @Composable
-private fun PasteFab(
-    modifier: Modifier = Modifier,
-    deviceClipboardValue: String?,
-    onPasteFromDeviceClipboard: (String) -> Unit,
-    onPasteFromQrCode: (String) -> Unit
-) {
-    fun buildFabItems(deviceClipboardValue: String?): List<ClipboardFabItem> {
-        val fabItems = mutableListOf<ClipboardFabItem>(PasteFromQrCode)
-        if (deviceClipboardValue != null) fabItems.add(0, PasteFromDeviceClipboard)
-        return fabItems.toList()
-    }
-
-    var state by remember { mutableStateOf(MultiFabState.COLLAPSED) }
-    val launcher = qrCodeScanner(onQrCodeScan = onPasteFromQrCode)
-
-    Column(modifier = modifier, content = {
-        MultiFloatingActionButton(
-            mainFabText = R.string.paste,
-            mainFabIcon = R.drawable.ic_baseline_content_paste_24,
-            items = buildFabItems(deviceClipboardValue),
-            targetState = state,
-            stateChanged = { targetState -> state = targetState },
-            onFabItemClicked = { item ->
-                when (item) {
-                    PasteFromDeviceClipboard -> if (deviceClipboardValue != null) onPasteFromDeviceClipboard(deviceClipboardValue)
-                    PasteFromQrCode -> launcher.launch(Unit)
-                }
-                state = MultiFabState.COLLAPSED
-            }
-        )
-    })
-}
-
-@Composable
-private fun NoItems(modifier: Modifier = Modifier) {
+private fun NoClipboardItems(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = 4.dp
@@ -421,6 +380,13 @@ private fun ClipboardItem(
     )
 }
 
+fun clipboardItemRootTag(itemId: McbItemId) = "${UiTags.clipboardItem}_${itemId.value}"
+fun clipboardItemCreationDateTag(itemId: McbItemId) = "${clipboardItemRootTag(itemId)}_creationDate"
+fun clipboardItemValueTag(itemId: McbItemId) = "${clipboardItemRootTag(itemId)}_value"
+fun clipboardItemRootTag(item: McbItem) = clipboardItemRootTag(item.id)
+fun clipboardItemCreationDateTag(item: McbItem) = clipboardItemCreationDateTag(item.id)
+fun clipboardItemValueTag(item: McbItem) = clipboardItemValueTag(item.id)
+
 @Composable
 private fun ClipboardItemContent(
     item: McbItem,
@@ -433,7 +399,7 @@ private fun ClipboardItemContent(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .testTag("${UiTags.clipboardItem}_${item.id.value}")
+            .testTag(clipboardItemRootTag(item))
             .semantics { contentDescription = itemCd },
         elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value
     ) {
@@ -443,10 +409,12 @@ private fun ClipboardItemContent(
                 .padding(8.dp)
         ) {
             Text(
+                modifier = Modifier.testTag(clipboardItemCreationDateTag(item)),
                 text = formatClipBoardDate(item.creationDate),
                 fontSize = 10.sp
             )
             Text(
+                modifier = Modifier.testTag(clipboardItemValueTag(item)),
                 text = item.value,
                 overflow = TextOverflow.Ellipsis
             )
@@ -507,31 +475,6 @@ private fun ShowQrCodeModal(item: McbItem, onCloseClick: () -> Unit) {
 }
 
 @Composable
-private fun qrCodeScanner(
-    onQrCodeScan: (String) -> Unit,
-    onClose: () -> Unit = {}
-): ManagedActivityResultLauncher<Unit, QrCodeScanResult> {
-    val showErrorDialog = remember { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(ScanQrCodeResultContract()) { scanResult ->
-        when (scanResult) {
-            QrCodeScanResult.NoResult -> {
-            } // Nothing to do
-            QrCodeScanResult.Error -> showErrorDialog.value = true
-            is QrCodeScanResult.Success -> onQrCodeScan(scanResult.value)
-        }
-        onClose()
-    }
-
-    if (showErrorDialog.value) {
-        InfoDialog(
-            text = R.string.error_scanning_qr_code,
-            onCloseClick = { showErrorDialog.value = false }
-        ) {}
-    }
-    return launcher
-}
-
-@Composable
 private fun formatClipBoardDate(date: LocalDateTime): String {
     val now = LocalDateTime.now()
     return when {
@@ -539,8 +482,8 @@ private fun formatClipBoardDate(date: LocalDateTime): String {
         now.minusMinutes(5).isBefore(date) -> stringResource(R.string.clipboard_date_a_few_minutes_ago)
         now.toLocalDate().isEqual(date.toLocalDate()) -> stringResource(
             R.string.clipboard_date_today_at,
-            MagicClipboardUtils.timeFormatter.format(date)
+            timeFormatter.format(date)
         )
-        else -> date.format(MagicClipboardUtils.dateTimeFormatter)
+        else -> date.format(dateTimeFormatter)
     }
 }

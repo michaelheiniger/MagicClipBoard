@@ -11,7 +11,7 @@ class DeviceClipboardUsecases(
 ) {
 
     fun pasteItemIntoDeviceClipboard(item: McbItem) {
-        clipboardManager.setPrimaryClip(ClipData.newPlainText(item.label, item.value))
+        clipboardManager.setPrimaryClip(ClipData.newPlainText("", item.value))
     }
 
     fun getDeviceClipboardValue(): String? {

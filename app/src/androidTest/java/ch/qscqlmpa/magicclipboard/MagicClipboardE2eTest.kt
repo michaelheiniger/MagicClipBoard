@@ -4,12 +4,15 @@ import androidx.compose.ui.test.*
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import org.junit.Test
 
+// FIXME: fix tests and setup
 @ExperimentalTestApi
 class MagicClipboardE2eTest : BaseE2eTest() {
 
     @Test
     fun itemsShouldBeDisplayed() {
         // Some visible items
+        testRule.onNodeWithTag(UiTags.loginAsIdentifiedUser).performClick()
+
         testRule.onNodeWithText("[item 1]").assertExists().assertIsDisplayed()
         testRule.onNodeWithText("[item 2] which is a bit longer").assertExists().assertIsDisplayed()
         testRule.onNodeWithText("[item 3] which is a much longeeeeeeeeeeeeeeeeeer item\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada")

@@ -1,18 +1,13 @@
 package ch.qscqlmpa.magicclipboard.clipboard.usecases
 
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
-import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
+import ch.qscqlmpa.magicclipboard.data.remote.Store
 
 class NewClibboardItemUsecase(
-    private val localStore: LocalStore
+    private val store: Store
 ) {
 
-    suspend fun pasteValueToMcb(value: String) {
-        localStore.addItem(
-            McbItem(
-                label = "label", // TODO: is "label" really useful ? 
-                value = value
-            )
-        )
+    suspend fun addNewItem(value: String) {
+        store.addNewItem(McbItem(value = value))
     }
 }

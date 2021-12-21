@@ -12,8 +12,10 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.8.1")
+        classpath("com.google.gms:google-services:4.3.10")
         classpath("de.mannodermaus.gradle.plugins:android-junit5:${Versions.androidJUnit5Plugin}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
     }
 }
 
@@ -28,16 +30,17 @@ allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions {
             freeCompilerArgs = listOf(
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xuse-experimental=kotlinx.coroutines.InternalCoroutinesApi",
                 "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
                 "-Xuse-experimental=androidx.compose.ExperimentalComposeApi",
                 "-Xuse-experimental=androidx.compose.foundation.ExperimentalFoundationApi",
                 "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
                 "-Xuse-experimental=androidx.compose.runtime.ExperimentalComposeApi",
                 "-Xuse-experimental=androidx.compose.ui.ExperimentalComposeUiApi",
-                "-Xuse-experimental=coil.annotation.ExperimentalCoilApi"
+                "-Xuse-experimental=androidx.compose.ui.test.ExperimentalTestApi",
+                "-Xuse-experimental=coil.annotation.ExperimentalCoilApi",
+                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=kotlinx.coroutines.InternalCoroutinesApi",
             )
         }
     }

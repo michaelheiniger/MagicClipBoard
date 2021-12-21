@@ -3,27 +3,154 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.R
+import ch.qscqlmpa.magicclipboard.auth.SessionManager
+import ch.qscqlmpa.magicclipboard.auth.SessionState
 import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClibboardItemUsecase
-import ch.qscqlmpa.magicclipboard.data.Result
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.launch
+import ch.qscqlmpa.magicclipboard.ui.Destination
+import ch.qscqlmpa.magicclipboard.ui.ScreenNavigator
+import ch.qscqlmpa.magicclipboard.ui.navOptionsPopUpToInclusive
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
+class MagicClipboardViewModel(
+    private val magicClipboardRepository: MagicClipboardRepository,
+    private val deviceClipboardUsecases: DeviceClipboardUsecases,
+    private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
+    private val newClibboardItemUsecase: NewClibboardItemUsecase,
+    private val idlingResource: McbIdlingResource,
+    private val sessionManager: SessionManager,
+    private val screenNavigator: ScreenNavigator
+) : BaseViewModel() {
+
+    private val viewModelState = MutableStateFlow(
+        MagicClipboardViewModelState(
+            deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue()
+        )
+    )
+
+    val uiState = viewModelState
+        .map { it.toUiState() }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            viewModelState.value.toUiState()
+        )
+
+    private lateinit var observeCliboardItemsJob: Job
+    private lateinit var observeLoginJob: Job
+
+    fun onDeleteItem(itemId: McbItemId) {
+        viewModelScope.launch(
+            beforeLaunch = { idlingResource.increment("Deleting item $itemId") }
+        ) {
+            deleteClipboardItemUsecase.deleteItem(itemId)
+        }
+    }
+
+    fun onPasteToMagicClipboard(value: String) {
+        viewModelScope.launch(
+            beforeLaunch = { idlingResource.increment("Pasting to MagicClipboard") }
+        ) {
+            newClibboardItemUsecase.addNewItem(value)
+        }
+    }
+
+    fun onPasteItemToDeviceClipboard(item: McbItem) {
+        deviceClipboardUsecases.pasteItemIntoDeviceClipboard(item)
+        viewModelState.update {
+            val message = ItemMessage.ItemLoadedInDeviceClipboard(
+                messageId = UUID.randomUUID().mostSignificantBits,
+                textId = R.string.item_pasted_in_device_clipboard,
+                actionTextId = R.string.ok,
+                itemId = item.id
+            )
+            it.copy(
+                // Device clipboard value has changed so we need to update the value displayed
+                deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue(),
+                messages = it.messages + message
+            )
+        }
+    }
+
+    fun onPasteFromQrCode(value: String) {
+        viewModelScope.launch {
+            newClibboardItemUsecase.addNewItem(value)
+        }
+    }
+
+    /**
+     * Notifies that the message has been shown on the screen.
+     */
+    fun messageShown(messageId: Long) {
+        viewModelState.update { currentUiState ->
+            val messages = currentUiState.messages.filterNot { it.messageId == messageId }
+            currentUiState.copy(messages = messages)
+        }
+    }
+
+    fun onLogout() {
+        viewModelScope.launch {
+            sessionManager.signOut()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        observeLoginJob = viewModelScope.launch {
+            sessionManager.sessionState().collect { state ->
+                when (state) {
+                    SessionState.Unauthenticated -> {
+                        screenNavigator.navigate(
+                            Destination.SignIn,
+                            navOptions = navOptionsPopUpToInclusive(Destination.MagicClipboard)
+                        )
+                    }
+                    is SessionState.SignedIn.Authenticated -> viewModelState.update { it.copy(username = state.username) }
+                    else -> {
+                        // Nothing to do
+                    }
+                }
+            }
+        }
+
+        idlingResource.increment("Loading Item list")
+        observeCliboardItemsJob = viewModelScope.launch {
+            magicClipboardRepository.observeItems().collect { items ->
+                viewModelState.update {
+                    it.copy(
+                        previousItemsState = it.currentItemsState,
+                        currentItemsState = items
+                    )
+                }
+                idlingResource.decrement("Item list updated")
+            }
+        }
+        viewModelState.update { it.copy(deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue()) }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        observeCliboardItemsJob.cancel()
+        observeLoginJob.cancel()
+    }
+}
+
 data class MagicClipboardUiState(
     val items: List<McbItem>,
     val newItemsAdded: Boolean,
-    val isLoading: Boolean,
     val messages: List<Message>,
     val deviceClipboardValue: String?,
+    val username: String
 )
 
 sealed interface Message {
@@ -53,121 +180,16 @@ sealed interface ItemMessage : Message {
 private data class MagicClipboardViewModelState(
     val previousItemsState: List<McbItem> = emptyList(),
     val currentItemsState: List<McbItem> = emptyList(),
-    val isLoading: Boolean = false,
     val messages: List<Message> = emptyList(),
-    val deviceClipboardValue: String? = null
+    val deviceClipboardValue: String? = null,
+    val username: String = ""
 ) {
     fun toUiState(): MagicClipboardUiState =
         MagicClipboardUiState(
             items = currentItemsState,
             newItemsAdded = currentItemsState.size > previousItemsState.size,
-            isLoading = isLoading,
             messages = messages,
-            deviceClipboardValue = deviceClipboardValue
+            deviceClipboardValue = deviceClipboardValue,
+            username = username
         )
-}
-
-class MagicClipboardViewModel(
-    private val magicClipboardRepository: MagicClipboardRepository,
-    private val deviceClipboardUsecases: DeviceClipboardUsecases,
-    private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
-    private val newClibboardItemUsecase: NewClibboardItemUsecase,
-    private val idlingResource: McbIdlingResource
-) : BaseViewModel() {
-
-    private val viewModelState = MutableStateFlow(MagicClipboardViewModelState(isLoading = true))
-
-    val uiState = viewModelState
-        .map { it.toUiState() }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            viewModelState.value.toUiState()
-        )
-
-    private lateinit var observeCliboardItemsJob: Job
-
-    fun onDeleteItem(itemId: McbItemId) {
-        viewModelScope.launch(
-            beforeLaunch = { idlingResource.increment("Deleting item $itemId") }
-        ) {
-            when (deleteClipboardItemUsecase.deleteItem(itemId)) {
-                is Result.Error -> {
-                    viewModelState.update {
-                        val message = ItemMessage.Deletion(
-                            messageId = UUID.randomUUID().mostSignificantBits,
-                            itemId = itemId,
-                        )
-                        it.copy(messages = it.messages + message)
-                    }
-                }
-                Result.Success -> {
-                    // Nothing to do
-                }
-            }
-        }
-    }
-
-    fun onPasteToMagicClipboard(value: String) {
-        viewModelScope.launch(
-            beforeLaunch = { idlingResource.increment("Pasting to MagicClipboard") }
-        ) {
-            newClibboardItemUsecase.pasteValueToMcb(value)
-        }
-    }
-
-    fun onPasteItemToDeviceClipboard(item: McbItem) {
-        deviceClipboardUsecases.pasteItemIntoDeviceClipboard(item)
-        viewModelState.update {
-            val message = ItemMessage.ItemLoadedInDeviceClipboard(
-                messageId = UUID.randomUUID().mostSignificantBits,
-                textId = R.string.item_pasted_in_device_clipboard,
-                actionTextId = R.string.ok,
-                itemId = item.id
-            )
-            it.copy(
-                deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue(), // Device clipboard value has changed
-                messages = it.messages + message
-            )
-        }
-    }
-
-    fun onPasteFromQrCode(value: String) {
-        viewModelScope.launch {
-            newClibboardItemUsecase.pasteValueToMcb(value)
-        }
-    }
-
-    /**
-     * Notifies that the message has been shown on the screen.
-     */
-    fun messageShown(messageId: Long) {
-        viewModelState.update { currentUiState ->
-            val messages = currentUiState.messages.filterNot { it.messageId == messageId }
-            currentUiState.copy(messages = messages)
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        idlingResource.increment("Loading Item list")
-        observeCliboardItemsJob = viewModelScope.launch {
-            magicClipboardRepository.observeItems().collect { items ->
-                viewModelState.update {
-                    it.copy(
-                        previousItemsState = it.currentItemsState,
-                        currentItemsState = items,
-                        isLoading = false
-                    )
-                }
-                idlingResource.decrement("Item list updated")
-            }
-        }
-        viewModelState.update { it.copy(deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue()) }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        observeCliboardItemsJob.cancel()
-    }
 }

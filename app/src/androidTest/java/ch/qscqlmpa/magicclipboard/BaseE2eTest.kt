@@ -5,8 +5,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.qscqlmpa.magicclipboard.data.store.local.InMemoryLocalStore
-import ch.qscqlmpa.magicclipboard.data.store.local.LocalStore
+import ch.qscqlmpa.magicclipboard.data.remote.Store
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -28,8 +27,6 @@ abstract class BaseE2eTest {
 
     private lateinit var app: TestApp
 
-    private lateinit var inMemoryLocalStore: InMemoryLocalStore
-
     private lateinit var idlingResource: IdlingResourceAdapter
 
     @Before
@@ -37,15 +34,27 @@ abstract class BaseE2eTest {
         app = ApplicationProvider.getApplicationContext()
         res = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
-        inMemoryLocalStore = app.get<LocalStore>() as InMemoryLocalStore
         idlingResource = IdlingResourceAdapter(app.get())
         testRule.registerIdlingResource(idlingResource)
-        runBlocking { inMemoryLocalStore.initializeWith(clipBoardItems.toSet()) }
     }
 
     @After
     fun tearDown() {
         testRule.unregisterIdlingResource(idlingResource)
+    }
+
+    protected fun initStore() {
+        val store = app.get<Store>()
+        runBlocking {
+            clipBoardItems.forEach {
+                launch { store.addNewItem(it) }
+            }
+        }
+    }
+
+    protected fun clearStore() {
+        val store = app.get<Store>()
+        runBlocking { store.clearStore() }
     }
 
     protected fun getString(resource: Int): String {
