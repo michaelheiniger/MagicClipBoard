@@ -61,6 +61,7 @@ private fun MagicClipboardBodyPreview() {
     MagicClipBoardTheme {
         MagicClipboardBody(
             uiState = MagicClipboardUiState(
+                currentDateTime = LocalDateTime.now(),
                 items = debugClipBoardItems.toList(),
                 newItemsAdded = false,
                 messages = emptyList(),
@@ -153,6 +154,7 @@ fun MagicClipboardBody(
                     false -> {
                         ClipboardItemList(
                             items = uiState.items,
+                            currentDateTime = uiState.currentDateTime,
                             newItemsAdded = uiState.newItemsAdded,
                             onDeleteItem = { item -> onDeleteItem(item) },
                             onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
@@ -313,6 +315,7 @@ private fun NoClipboardItems(modifier: Modifier = Modifier) {
 @Composable
 private fun ClipboardItemList(
     items: List<McbItem>,
+    currentDateTime: LocalDateTime,
     newItemsAdded: Boolean,
     onDeleteItem: (McbItemId) -> Unit,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit
@@ -331,6 +334,7 @@ private fun ClipboardItemList(
         items(items, key = { item -> item.id.value }) { item ->
             ClipboardItem(
                 item = item,
+                currentDateTime = currentDateTime,
                 onDeleteItem = onDeleteItem,
                 onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
             )
@@ -341,6 +345,7 @@ private fun ClipboardItemList(
 @Composable
 private fun ClipboardItem(
     item: McbItem,
+    currentDateTime: LocalDateTime,
     onDeleteItem: (McbItemId) -> Unit,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit
 ) {
@@ -389,6 +394,7 @@ private fun ClipboardItem(
         dismissContent = {
             ClipboardItemContent(
                 item = item,
+                currentDateTime = currentDateTime,
                 sliding = dismissState.dismissDirection != null,
                 onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
             )
@@ -406,6 +412,7 @@ fun clipboardItemValueTag(item: McbItem) = clipboardItemValueTag(item.id)
 @Composable
 private fun ClipboardItemContent(
     item: McbItem,
+    currentDateTime: LocalDateTime,
     sliding: Boolean,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit
 ) {
@@ -426,7 +433,7 @@ private fun ClipboardItemContent(
         ) {
             Text(
                 modifier = Modifier.testTag(clipboardItemCreationDateTag(item)),
-                text = formatClipBoardDate(item.creationDate),
+                text = formatClipBoardDate(item.creationDate, currentDateTime),
                 fontSize = 10.sp
             )
             Text(
@@ -491,12 +498,11 @@ private fun ShowQrCodeModal(item: McbItem, onCloseClick: () -> Unit) {
 }
 
 @Composable
-private fun formatClipBoardDate(date: LocalDateTime): String {
-    val now = LocalDateTime.now()
+private fun formatClipBoardDate(date: LocalDateTime, currentDateTime: LocalDateTime): String {
     return when {
-        now.minusMinutes(1).isBefore(date) -> stringResource(R.string.clipboard_date_a_few_seconds_ago)
-        now.minusMinutes(5).isBefore(date) -> stringResource(R.string.clipboard_date_a_few_minutes_ago)
-        now.toLocalDate().isEqual(date.toLocalDate()) -> stringResource(
+        currentDateTime.minusMinutes(1).isBefore(date) -> stringResource(R.string.clipboard_date_a_few_seconds_ago)
+        currentDateTime.minusMinutes(5).isBefore(date) -> stringResource(R.string.clipboard_date_a_few_minutes_ago)
+        currentDateTime.toLocalDate().isEqual(date.toLocalDate()) -> stringResource(
             R.string.clipboard_date_today_at,
             timeFormatter.format(date)
         )

@@ -17,6 +17,7 @@ import ch.qscqlmpa.magicclipboard.ui.Destination
 import ch.qscqlmpa.magicclipboard.ui.ScreenNavigator
 import ch.qscqlmpa.magicclipboard.ui.navOptionsPopUpToInclusive
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
+import java.time.LocalDateTime
 import java.util.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -51,7 +52,7 @@ class MagicClipboardViewModel(
 
     private lateinit var observeCliboardItemsJob: Job
     private lateinit var observeLoginJob: Job
-    private lateinit var scheduledRecompositionJob: Job
+    private lateinit var recompositionSchedulerJob: Job
 
     fun onDeleteItem(itemId: McbItemId) {
         viewModelScope.launch(
@@ -144,6 +145,9 @@ class MagicClipboardViewModel(
                 idlingResource.decrement("Item list updated")
             }
         }
+        recompositionSchedulerJob = viewModelScope.launch {
+            tickerFlow(1).collect { viewModelState.update { it.copy(currentDateTime = LocalDateTime.now()) } }
+        }
         viewModelState.update { it.copy(deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue()) }
     }
 
@@ -151,10 +155,27 @@ class MagicClipboardViewModel(
         super.onStop()
         observeCliboardItemsJob.cancel()
         observeLoginJob.cancel()
+        recompositionSchedulerJob.cancel()
+    }
+
+    private fun tickerFlow(
+        start: Long = 0,
+        initialDelayMs: Long = 0,
+        periodMs: Long = 60_000 // Every minute since the resolution of the time-based content is one minute
+    ) = flow {
+        delay(initialDelayMs)
+
+        var counter = start
+        while (true) {
+            emit(counter)
+            counter += 1
+            delay(periodMs)
+        }
     }
 }
 
 data class MagicClipboardUiState(
+    val currentDateTime: LocalDateTime,
     val items: List<McbItem>,
     val newItemsAdded: Boolean,
     val messages: List<Message>,
@@ -188,6 +209,7 @@ sealed interface ItemMessage : Message {
 }
 
 private data class MagicClipboardViewModelState(
+    val currentDateTime: LocalDateTime = LocalDateTime.now(),
     val previousItemsState: List<McbItem> = emptyList(),
     val currentItemsState: List<McbItem> = emptyList(),
     val messages: List<Message> = emptyList(),
@@ -197,6 +219,7 @@ private data class MagicClipboardViewModelState(
 ) {
     fun toUiState(): MagicClipboardUiState =
         MagicClipboardUiState(
+            currentDateTime = currentDateTime,
             items = currentItemsState,
             newItemsAdded = currentItemsState.size > previousItemsState.size,
             messages = messages,
