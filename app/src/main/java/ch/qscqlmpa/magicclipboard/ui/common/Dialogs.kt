@@ -60,6 +60,21 @@ fun YesNoDialog(
     onYesClick: () -> Unit = {},
     onClose: () -> Unit = {},
 ) {
+    YesNoDialog(
+        text = stringResource(text),
+        onNoClick = onNoClick,
+        onYesClick = onYesClick,
+        onClose = onClose
+    )
+}
+
+@Composable
+fun YesNoDialog(
+    text: String,
+    onNoClick: () -> Unit = {},
+    onYesClick: () -> Unit = {},
+    onClose: () -> Unit = {},
+) {
     Dialog(
         onDismissRequest = onClose,
         properties = DialogProperties(),
@@ -75,7 +90,62 @@ fun YesNoDialog(
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = stringResource(text), color = MaterialTheme.colors.primary)
+                    Text(text = text, color = MaterialTheme.colors.primary)
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = {
+                                onNoClick()
+                                onClose()
+                            },
+                            modifier = Modifier
+                                .testTag(UiTags.dialogNoBtn)
+                        ) {
+                            Text(stringResource(R.string.no))
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        TextButton(
+                            onClick = {
+                                onYesClick()
+                                onClose()
+                            },
+                            modifier = Modifier.testTag(UiTags.dialogYesBtn)
+                        ) {
+                            Text(stringResource(R.string.yes))
+                        }
+                    }
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun YesNoDialog(
+    content: @Composable () -> Unit = {},
+    onNoClick: () -> Unit = {},
+    onYesClick: () -> Unit = {},
+    onClose: () -> Unit = {},
+) {
+    Dialog(
+        onDismissRequest = onClose,
+        properties = DialogProperties(),
+        content = {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colors.surface,
+                contentColor = contentColorFor(MaterialTheme.colors.surface)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    content()
                     Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),

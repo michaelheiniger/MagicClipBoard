@@ -17,10 +17,11 @@ import ch.qscqlmpa.magicclipboard.ui.Destination
 import ch.qscqlmpa.magicclipboard.ui.ScreenNavigator
 import ch.qscqlmpa.magicclipboard.ui.navOptionsPopUpToInclusive
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
+import java.util.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.*
 
 class MagicClipboardViewModel(
     private val magicClipboardRepository: MagicClipboardRepository,
@@ -29,12 +30,14 @@ class MagicClipboardViewModel(
     private val newClibboardItemUsecase: NewClibboardItemUsecase,
     private val idlingResource: McbIdlingResource,
     private val sessionManager: SessionManager,
-    private val screenNavigator: ScreenNavigator
+    private val screenNavigator: ScreenNavigator,
+    private val newClipboardValue: String?
 ) : BaseViewModel() {
 
     private val viewModelState = MutableStateFlow(
         MagicClipboardViewModelState(
-            deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue()
+            deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue(),
+            newClipboardValue = newClipboardValue
         )
     )
 
@@ -48,6 +51,7 @@ class MagicClipboardViewModel(
 
     private lateinit var observeCliboardItemsJob: Job
     private lateinit var observeLoginJob: Job
+    private lateinit var scheduledRecompositionJob: Job
 
     fun onDeleteItem(itemId: McbItemId) {
         viewModelScope.launch(
@@ -57,7 +61,8 @@ class MagicClipboardViewModel(
         }
     }
 
-    fun onPasteToMagicClipboard(value: String) {
+    fun onPasteValueToMcb(value: String) {
+        if (value == newClipboardValue) viewModelState.update { it.copy(newClipboardValue = null) }
         viewModelScope.launch(
             beforeLaunch = { idlingResource.increment("Pasting to MagicClipboard") }
         ) {
@@ -88,6 +93,10 @@ class MagicClipboardViewModel(
         }
     }
 
+    fun onDismissNewClipboardValue() {
+        viewModelState.update { it.copy(newClipboardValue = null) }
+    }
+
     /**
      * Notifies that the message has been shown on the screen.
      */
@@ -112,7 +121,7 @@ class MagicClipboardViewModel(
                     SessionState.Unauthenticated -> {
                         screenNavigator.navigate(
                             Destination.SignIn,
-                            navOptions = navOptionsPopUpToInclusive(Destination.MagicClipboard)
+                            navOptions = navOptionsPopUpToInclusive(Destination.MagicClipboard.routeName)
                         )
                     }
                     is SessionState.SignedIn.Authenticated -> viewModelState.update { it.copy(username = state.username) }
@@ -150,7 +159,8 @@ data class MagicClipboardUiState(
     val newItemsAdded: Boolean,
     val messages: List<Message>,
     val deviceClipboardValue: String?,
-    val username: String
+    val username: String,
+    val newClipboardValue: String?
 )
 
 sealed interface Message {
@@ -181,6 +191,7 @@ private data class MagicClipboardViewModelState(
     val previousItemsState: List<McbItem> = emptyList(),
     val currentItemsState: List<McbItem> = emptyList(),
     val messages: List<Message> = emptyList(),
+    val newClipboardValue: String?,
     val deviceClipboardValue: String? = null,
     val username: String = ""
 ) {
@@ -190,6 +201,7 @@ private data class MagicClipboardViewModelState(
             newItemsAdded = currentItemsState.size > previousItemsState.size,
             messages = messages,
             deviceClipboardValue = deviceClipboardValue,
-            username = username
+            username = username,
+            newClipboardValue = newClipboardValue
         )
 }

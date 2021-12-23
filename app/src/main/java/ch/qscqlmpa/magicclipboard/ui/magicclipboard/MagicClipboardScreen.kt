@@ -55,7 +55,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
-
 @Preview(showBackground = true)
 @Composable
 private fun MagicClipboardBodyPreview() {
@@ -66,12 +65,14 @@ private fun MagicClipboardBodyPreview() {
                 newItemsAdded = false,
                 messages = emptyList(),
                 deviceClipboardValue = "Here is an example of the value from device clipboard",
-                username = "Ned Stark"
+                username = "Ned Stark",
+                newClipboardValue = null
             ),
             onDeleteItem = {},
             onPasteItemToDeviceClipboard = {},
-            onPasteValueFromDeviceClipboardToMcb = {},
+            onPasteValueToMcb = {},
             onPasteFromQrCode = {},
+            onDismissNewClipboardValue = {},
             onMessageDismissState = {},
             onSignOut = {},
         )
@@ -84,9 +85,10 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
     MagicClipboardBody(
         uiState = uiState,
         onDeleteItem = { itemId -> viewModel.onDeleteItem(itemId) },
-        onPasteValueFromDeviceClipboardToMcb = viewModel::onPasteToMagicClipboard,
+        onPasteValueToMcb = viewModel::onPasteValueToMcb,
         onPasteItemToDeviceClipboard = viewModel::onPasteItemToDeviceClipboard,
         onPasteFromQrCode = viewModel::onPasteFromQrCode,
+        onDismissNewClipboardValue = viewModel::onDismissNewClipboardValue,
         onMessageDismissState = viewModel::messageShown,
         onSignOut = viewModel::onLogout,
     )
@@ -97,11 +99,25 @@ fun MagicClipboardBody(
     uiState: MagicClipboardUiState,
     onDeleteItem: (McbItemId) -> Unit,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit,
-    onPasteValueFromDeviceClipboardToMcb: (String) -> Unit,
+    onPasteValueToMcb: (String) -> Unit,
     onPasteFromQrCode: (String) -> Unit,
+    onDismissNewClipboardValue: () -> Unit,
     onMessageDismissState: (Long) -> Unit,
     onSignOut: () -> Unit,
 ) {
+    if (uiState.newClipboardValue != null) {
+        YesNoDialog(
+            content = {
+                Text(text = stringResource(R.string.add_new_value))
+                Surface(color = Color.DarkGray) {
+                    Text(text = uiState.newClipboardValue)
+                }
+            },
+            onYesClick = { onPasteValueToMcb(uiState.newClipboardValue) },
+            onNoClick = onDismissNewClipboardValue
+        )
+    }
+
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
@@ -128,7 +144,7 @@ fun MagicClipboardBody(
                 if (uiState.deviceClipboardValue != null) {
                     DeviceClipboardValue(
                         deviceClipboardValue = uiState.deviceClipboardValue,
-                        onPasteValueToMcb = onPasteValueFromDeviceClipboardToMcb
+                        onPasteValueToMcb = onPasteValueToMcb
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -160,7 +176,7 @@ fun MagicClipboardBody(
                             offsetY += dragAmount.y
                         }
                     },
-                onPasteFromDeviceClipboard = onPasteValueFromDeviceClipboardToMcb,
+                onPasteFromDeviceClipboard = onPasteValueToMcb,
                 onPasteFromQrCode = onPasteFromQrCode
             )
         }

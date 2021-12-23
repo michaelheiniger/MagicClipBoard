@@ -43,6 +43,6 @@ val navigationModule = module {
 }
 
 val viewModelsModule = module {
-    viewModel { MagicClipboardViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { parameters -> MagicClipboardViewModel(get(), get(), get(), get(), get(), get(), get(), parameters.getOrNull()) }
     viewModel { SignInViewModel(get(), get()) }
 }

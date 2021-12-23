@@ -4,6 +4,9 @@ import ch.qscqlmpa.magicclipboard.auth.SessionStateProvider
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import com.google.firebase.database.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -14,9 +17,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.tinylog.kotlin.Logger
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class FirebaseStore(
     private val ioDispatcher: CoroutineDispatcher,
@@ -56,7 +56,7 @@ class FirebaseStore(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Logger.debug { "Clipboard items changed: $snapshot" }
                     val itemsMap = snapshot.getValue(clipboardItemsTypeIndicator) ?: emptyMap()
-                    trySend(itemsMap.values.map(McbItemDto::toMcbItem))
+                    trySend(itemsMap.values.map(McbItemDto::toMcbItem).sortedByDescending { i -> i.creationDate })
                         .onFailure { throwable ->
                             // Downstream has been cancelled or failed, can log here
                             val msg = "Error while observing clipboard items from remote database."

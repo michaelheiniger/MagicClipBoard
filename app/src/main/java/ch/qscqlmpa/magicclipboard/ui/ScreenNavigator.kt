@@ -29,9 +29,9 @@ class ScreenNavigator {
     }
 }
 
-fun navOptionsPopUpToInclusive(destination: Destination): NavOptions {
+fun navOptionsPopUpToInclusive(routeName: String): NavOptions {
     return navOptions {
-        popUpTo(destination.routeName) {
+        popUpTo(routeName) {
             inclusive = true
         }
     }

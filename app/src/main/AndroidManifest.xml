@@ -20,13 +20,17 @@
             android:theme="@style/Theme.MagicClipBoard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.qrcodescanner.QrCodeScannerActivity"
-            android:exported="true"
+            android:exported="false"
             android:label=""
             android:theme="@style/Theme.MagicClipBoard" />
     </application>

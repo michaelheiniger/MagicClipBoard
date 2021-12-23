@@ -17,7 +17,7 @@ import kotlinx.coroutines.tasks.await
 
 class SignInViewModel(
     private val sessionManager: SessionManager,
-    private val screenNavigator: ScreenNavigator
+    private val screenNavigator: ScreenNavigator,
 ) : BaseViewModel() {
 
     private val viewModelState = MutableStateFlow(LoginViewModelState(isLoading = true))
@@ -47,7 +47,7 @@ class SignInViewModel(
                     is SessionState.SignedIn -> {
                         screenNavigator.navigate(
                             destination = Destination.MagicClipboard,
-                            navOptions = navOptionsPopUpToInclusive(Destination.SignIn)
+                            navOptions = navOptionsPopUpToInclusive(Destination.SignIn.routeName)
                         )
                     }
                     SessionState.Unauthenticated -> {

@@ -132,7 +132,7 @@ internal class MagicClipboardScreenTest : BaseUiUnitTest() {
                     username = username
                 ),
                 onDeleteItem = { deletedItem = it },
-                onPasteValueFromDeviceClipboardToMcb = { pastedValueFromDeviceClipboard = it },
+                onPasteValueToMcb = { pastedValueFromDeviceClipboard = it },
                 onPasteItemToDeviceClipboard = { pastedItemToDeviceClipboard = it },
                 onPasteFromQrCode = { pastedValueFromQrCode = it },
                 onMessageDismissState = { dismissedMessageId = it },

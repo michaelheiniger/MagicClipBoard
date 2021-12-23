@@ -1,9 +1,11 @@
 package ch.qscqlmpa.magicclipboard.ui
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -11,12 +13,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
+import ch.qscqlmpa.magicclipboard.ui.common.findActivity
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardScreen
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardViewModel
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInScreen
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInViewModel
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
 import org.koin.androidx.compose.viewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MagicClipboard(
@@ -34,7 +39,13 @@ fun MagicClipboard(
         startDestination = Destination.SignIn.routeName
     ) {
         composable(
-            route = Destination.SignIn.routeName
+            route = Destination.SignIn.routeName,
+            deepLinks = listOf(
+                navDeepLink {
+                    action = Intent.ACTION_SEND
+                    mimeType = "plain/text"
+                }
+            )
         ) {
             val viewModel by viewModel<SignInViewModel>()
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
@@ -43,11 +54,22 @@ fun MagicClipboard(
         composable(
             route = Destination.MagicClipboard.routeName
         ) {
-            val viewModel by viewModel<MagicClipboardViewModel>()
+            val newClipboardValue = getNewClipboardValueFromDeepLink()
+            val viewModel by viewModel<MagicClipboardViewModel> { parametersOf(newClipboardValue) }
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
             MagicClipboardScreen(viewModel)
         }
     }
+}
+
+@Composable
+private fun getNewClipboardValueFromDeepLink(): String? {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val intent = activity?.intent
+    return if (intent != null && intent.action == Intent.ACTION_SEND) {
+        intent.getStringExtra(Intent.EXTRA_TEXT)
+    } else null
 }
 
 sealed class Destination(val routeName: String) {
