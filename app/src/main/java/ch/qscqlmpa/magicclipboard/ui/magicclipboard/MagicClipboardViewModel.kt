@@ -10,7 +10,7 @@ import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
-import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClibboardItemUsecase
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.launch
 import ch.qscqlmpa.magicclipboard.ui.Destination
@@ -27,7 +27,7 @@ class MagicClipboardViewModel(
     private val magicClipboardRepository: MagicClipboardRepository,
     private val deviceClipboardUsecases: DeviceClipboardUsecases,
     private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
-    private val newClibboardItemUsecase: NewClibboardItemUsecase,
+    private val newClipboardItemUsecase: NewClipboardItemUsecase,
     private val idlingResource: McbIdlingResource,
     private val sessionManager: SessionManager,
     private val screenNavigator: ScreenNavigator,
@@ -66,7 +66,7 @@ class MagicClipboardViewModel(
         viewModelScope.launch(
             beforeLaunch = { idlingResource.increment("Pasting to MagicClipboard") }
         ) {
-            newClibboardItemUsecase.addNewItem(value)
+            newClipboardItemUsecase.addNewItem(value)
         }
     }
 
@@ -89,7 +89,7 @@ class MagicClipboardViewModel(
 
     fun onPasteFromQrCode(value: String) {
         viewModelScope.launch {
-            newClibboardItemUsecase.addNewItem(value)
+            newClipboardItemUsecase.addNewItem(value)
         }
     }
 

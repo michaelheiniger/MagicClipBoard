@@ -3,7 +3,7 @@ package ch.qscqlmpa.magicclipboard.clipboard.usecases
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.data.remote.Store
 
-class NewClibboardItemUsecase(
+class NewClipboardItemUsecase(
     private val store: Store
 ) {
 

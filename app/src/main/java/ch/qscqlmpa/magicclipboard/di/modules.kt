@@ -5,7 +5,7 @@ import android.content.Context.CLIPBOARD_SERVICE
 import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
-import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClibboardItemUsecase
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.idlingresource.StubIdlingResource
 import ch.qscqlmpa.magicclipboard.ui.ScreenNavigator
@@ -35,7 +35,7 @@ val repositoriesModule = module {
 val usecasesModule = module {
     single { DeviceClipboardUsecases(androidContext(), get()) }
     single { DeleteClipboardItemUsecase(get()) }
-    single { NewClibboardItemUsecase(get()) }
+    single { NewClipboardItemUsecase(get()) }
 }
 
 val navigationModule = module {
