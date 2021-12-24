@@ -3,8 +3,7 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -426,6 +425,7 @@ private fun ClipboardItemContent(
             .semantics { contentDescription = itemCd },
         elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value
     ) {
+        var expanded by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -437,9 +437,17 @@ private fun ClipboardItemContent(
                 fontSize = 10.sp
             )
             Text(
-                modifier = Modifier.testTag(clipboardItemValueTag(item)),
+                modifier = Modifier.testTag(clipboardItemValueTag(item))
+                    .clickable { expanded = !expanded }
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow,
+                        )
+                    ),
                 text = item.value,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                maxLines = if (expanded) Int.MAX_VALUE else 3
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
