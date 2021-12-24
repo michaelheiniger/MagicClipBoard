@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -52,10 +53,7 @@ fun MultiFloatingActionButton(
         label = "rotation"
     ) { state -> if (state == MultiFabState.EXPANDED) 90f else 0f }
 
-    Column(
-        horizontalAlignment = Alignment.End,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Column(horizontalAlignment = Alignment.End) {
         items.forEach { item ->
             AnimatedVisibility(
                 visible = targetState == MultiFabState.EXPANDED,
@@ -118,6 +116,7 @@ private fun MiniFabItem(
                 )
                 .padding(horizontal = 6.dp, vertical = 4.dp)
                 .align(Alignment.CenterVertically)
+                .clickable { onFabItemClicked(item) }
         )
         Spacer(modifier = Modifier.width(8.dp))
         FloatingActionButton(

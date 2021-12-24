@@ -168,7 +168,7 @@ fun MagicClipboardBody(
             PasteFab(
                 deviceClipboardValue = uiState.deviceClipboardValue,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.BottomEnd)
                     .padding(bottom = 10.dp, end = 10.dp)
                     .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                     .pointerInput(Unit) {
