@@ -24,7 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MagicClipboardViewModel(
+class ClipboardViewModel(
     private val magicClipboardRepository: MagicClipboardRepository,
     private val deviceClipboardUsecases: DeviceClipboardUsecases,
     private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
@@ -88,12 +88,6 @@ class MagicClipboardViewModel(
         }
     }
 
-    fun onPasteFromQrCode(value: String) {
-        viewModelScope.launch {
-            newClipboardItemUsecase.addNewItem(value)
-        }
-    }
-
     fun onDismissNewClipboardValue() {
         viewModelState.update { it.copy(newClipboardValue = null) }
     }
@@ -122,7 +116,7 @@ class MagicClipboardViewModel(
                     SessionState.Unauthenticated -> {
                         screenNavigator.navigate(
                             Destination.SignIn,
-                            navOptions = navOptionsPopUpToInclusive(Destination.MagicClipboard.routeName)
+                            navOptions = navOptionsPopUpToInclusive(Destination.Clipboard.routeName)
                         )
                     }
                     is SessionState.SignedIn.Authenticated -> viewModelState.update { it.copy(username = state.username) }

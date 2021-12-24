@@ -56,9 +56,9 @@ import kotlin.math.roundToInt
 
 @Preview(showBackground = true)
 @Composable
-private fun MagicClipboardBodyPreview() {
+private fun ClipboardBodyPreview() {
     MagicClipBoardTheme {
-        MagicClipboardBody(
+        ClipboardBody(
             uiState = MagicClipboardUiState(
                 currentDateTime = LocalDateTime.now(),
                 items = debugClipBoardItems.toList(),
@@ -80,14 +80,14 @@ private fun MagicClipboardBodyPreview() {
 }
 
 @Composable
-fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
+fun ClipboardScreen(viewModel: ClipboardViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    MagicClipboardBody(
+    ClipboardBody(
         uiState = uiState,
         onDeleteItem = { itemId -> viewModel.onDeleteItem(itemId) },
         onPasteValueToMcb = viewModel::onPasteValueToMcb,
         onPasteItemToDeviceClipboard = viewModel::onPasteItemToDeviceClipboard,
-        onPasteFromQrCode = viewModel::onPasteFromQrCode,
+        onPasteFromQrCode = viewModel::onPasteValueToMcb,
         onDismissNewClipboardValue = viewModel::onDismissNewClipboardValue,
         onMessageDismissState = viewModel::messageShown,
         onSignOut = viewModel::onLogout,
@@ -95,7 +95,7 @@ fun MagicClipboardScreen(viewModel: MagicClipboardViewModel) {
 }
 
 @Composable
-fun MagicClipboardBody(
+fun ClipboardBody(
     uiState: MagicClipboardUiState,
     onDeleteItem: (McbItemId) -> Unit,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit,
@@ -122,7 +122,7 @@ fun MagicClipboardBody(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            MagicClipboardTopBar(
+            ClipboardTopBar(
                 username = uiState.username,
                 onSignOut = onSignOut
             )
@@ -216,7 +216,7 @@ fun MagicClipboardBody(
 }
 
 @Composable
-private fun MagicClipboardTopBar(
+private fun ClipboardTopBar(
     username: String,
     onSignOut: () -> Unit
 ) {

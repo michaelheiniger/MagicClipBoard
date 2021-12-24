@@ -15,8 +15,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import ch.qscqlmpa.magicclipboard.ui.common.findActivity
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardScreen
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardViewModel
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardScreen
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardViewModel
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInScreen
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInViewModel
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
@@ -52,12 +52,12 @@ fun MagicClipboard(
             SignInScreen(viewModel)
         }
         composable(
-            route = Destination.MagicClipboard.routeName
+            route = Destination.Clipboard.routeName
         ) {
             val newClipboardValue = getNewClipboardValueFromDeepLink()
-            val viewModel by viewModel<MagicClipboardViewModel> { parametersOf(newClipboardValue) }
+            val viewModel by viewModel<ClipboardViewModel> { parametersOf(newClipboardValue) }
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
-            MagicClipboardScreen(viewModel)
+            ClipboardScreen(viewModel)
         }
     }
 }
@@ -74,7 +74,7 @@ private fun getNewClipboardValueFromDeepLink(): String? {
 
 sealed class Destination(val routeName: String) {
     object SignIn : Destination("signIn")
-    object MagicClipboard : Destination("clipboard")
+    object Clipboard : Destination("clipboard")
 }
 
 @Composable

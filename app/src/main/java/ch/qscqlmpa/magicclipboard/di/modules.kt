@@ -9,7 +9,7 @@ import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.idlingresource.StubIdlingResource
 import ch.qscqlmpa.magicclipboard.ui.ScreenNavigator
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardViewModel
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardViewModel
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
@@ -43,6 +43,6 @@ val navigationModule = module {
 }
 
 val viewModelsModule = module {
-    viewModel { parameters -> MagicClipboardViewModel(get(), get(), get(), get(), get(), get(), get(), parameters.getOrNull()) }
+    viewModel { parameters -> ClipboardViewModel(get(), get(), get(), get(), get(), get(), get(), parameters.getOrNull()) }
     viewModel { SignInViewModel(get(), get()) }
 }

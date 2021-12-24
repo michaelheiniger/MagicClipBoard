@@ -5,9 +5,10 @@ import ch.qscqlmpa.magicclipboard.*
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
+import java.time.LocalDateTime
 import org.junit.Test
 
-internal class MagicClipboardScreenTest : BaseUiUnitTest() {
+internal class ClipboardScreenTest : BaseUiUnitTest() {
 
     private var items: List<McbItem> = emptyList()
     private var newItemsAdded = false
@@ -123,18 +124,21 @@ internal class MagicClipboardScreenTest : BaseUiUnitTest() {
 
     private fun launchTest() {
         launchTestWithContent {
-            MagicClipboardBody(
+            ClipboardBody(
                 uiState = MagicClipboardUiState(
+                    currentDateTime = LocalDateTime.now(),
                     items = items,
                     newItemsAdded = newItemsAdded,
                     messages = messages,
                     deviceClipboardValue = deviceClipboardValue,
-                    username = username
+                    username = username,
+                    newClipboardValue = null
                 ),
                 onDeleteItem = { deletedItem = it },
-                onPasteValueToMcb = { pastedValueFromDeviceClipboard = it },
                 onPasteItemToDeviceClipboard = { pastedItemToDeviceClipboard = it },
+                onPasteValueToMcb = { pastedValueFromDeviceClipboard = it },
                 onPasteFromQrCode = { pastedValueFromQrCode = it },
+                onDismissNewClipboardValue = {},
                 onMessageDismissState = { dismissedMessageId = it },
                 onSignOut = { signedOutClicked = true }
             )

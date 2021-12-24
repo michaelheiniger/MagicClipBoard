@@ -46,7 +46,7 @@ class SignInViewModel(
                 when (sessionState) {
                     is SessionState.SignedIn -> {
                         screenNavigator.navigate(
-                            destination = Destination.MagicClipboard,
+                            destination = Destination.Clipboard,
                             navOptions = navOptionsPopUpToInclusive(Destination.SignIn.routeName)
                         )
                     }
