@@ -1,10 +1,23 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 
-import androidx.compose.ui.test.*
-import ch.qscqlmpa.magicclipboard.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToIndex
+import ch.qscqlmpa.magicclipboard.BaseUiUnitTest
+import ch.qscqlmpa.magicclipboard.R
+import ch.qscqlmpa.magicclipboard.clipBoardItems
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
+import ch.qscqlmpa.magicclipboard.item1
+import ch.qscqlmpa.magicclipboard.item2
+import ch.qscqlmpa.magicclipboard.item3
+import ch.qscqlmpa.magicclipboard.item4
+import ch.qscqlmpa.magicclipboard.item5
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.AllItemsClipboardBody
 import java.time.LocalDateTime
 import org.junit.Test
 
@@ -17,6 +30,7 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
     private var username: String = "Ned Stark"
 
     private var deletedItem: McbItemId? = null
+    private var favoriteItem: McbItem? = null
     private var pastedValueFromDeviceClipboard: String? = null
     private var pastedItemToDeviceClipboard: McbItem? = null
     private var pastedValueFromQrCode: String? = null
@@ -34,7 +48,7 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
         launchTest()
 
         // Then
-        testRule.onNodeWithText(getString(R.string.no_clipboard_item)).assertIsDisplayed()
+        testRule.onNodeWithText(getString(R.string.no_clipboard_items)).assertIsDisplayed()
         assertDeviceClipboardPanel()
         assertToolbarContent()
         assertPasteFab()
@@ -51,7 +65,7 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
         launchTest()
 
         // Then
-        testRule.onNodeWithText(getString(R.string.no_clipboard_item)).assertDoesNotExist()
+        testRule.onNodeWithText(getString(R.string.no_clipboard_items)).assertDoesNotExist()
         testRule.onNodeWithText("[item 1]", substring = true).assertIsDisplayed()
         testRule.onNodeWithText("[item 2]", substring = true).assertIsDisplayed()
         testRule.onNodeWithText("[item 3]", substring = true).assertIsDisplayed()
@@ -90,6 +104,8 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
         assertItemDateTime(item1, getString(R.string.clipboard_date_a_few_seconds_ago))
         assertItemDateTime(item2, getString(R.string.clipboard_date_a_few_minutes_ago))
         assertItemDateTime(item3, "Today at 13:45:24")
+
+        testRule.onNodeWithTag(UiTags.clipboardItemList).performScrollToIndex(4)
         assertItemDateTime(item5, "26.07.1989 19:55:00")
     }
 
@@ -124,7 +140,7 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
 
     private fun launchTest() {
         launchTestWithContent {
-            ClipboardBody(
+            AllItemsClipboardBody(
                 uiState = MagicClipboardUiState(
                     currentDateTime = LocalDateTime.now(),
                     items = items,
@@ -135,6 +151,9 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
                     newClipboardValue = null
                 ),
                 onDeleteItem = { deletedItem = it },
+                currentRoute = null,
+                onBottomBarItemClick = {},
+                onItemFavoriteToggle = { favoriteItem = it },
                 onPasteItemToDeviceClipboard = { pastedItemToDeviceClipboard = it },
                 onPasteValueToMcb = { pastedValueFromDeviceClipboard = it },
                 onPasteFromQrCode = { pastedValueFromQrCode = it },

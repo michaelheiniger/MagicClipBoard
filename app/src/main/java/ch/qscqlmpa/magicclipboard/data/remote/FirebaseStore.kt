@@ -3,7 +3,12 @@ package ch.qscqlmpa.magicclipboard.data.remote
 import ch.qscqlmpa.magicclipboard.auth.SessionStateProvider
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.GenericTypeIndicator
+import com.google.firebase.database.ValueEventListener
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -26,13 +31,13 @@ class FirebaseStore(
 
     override suspend fun addNewItem(item: McbItem) {
         withContext(ioDispatcher) {
-            clipboardItemsReference.child(item.id.value.toString()).setValue(
-                McbItemDto().apply {
-                    id = item.id.value.toString()
-                    value = item.value
-                    creationDate = item.creationDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                }
-            ).await()
+            clipboardItemsReference.child(item.id.value.toString()).setValue(toDto(item)).await()
+        }
+    }
+
+    override suspend fun updateItem(item: McbItem) {
+        withContext(ioDispatcher) {
+            clipboardItemsReference.child(item.id.value.toString()).setValue(toDto(item)).await()
         }
     }
 
@@ -78,16 +83,27 @@ class FirebaseStore(
         val userId = sessionStateProvider.userId ?: throw IllegalStateException("User is unauthenticated")
         db.getReference("users/${userId.value}/clipboardItems")
     }
+
+    private fun toDto(item: McbItem): McbItemDto {
+        return McbItemDto().apply {
+            id = item.id.value.toString()
+            value = item.value
+            creationDate = item.creationDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            favorite = item.favorite
+        }
+    }
 }
 
 private class McbItemDto {
     var id: String? = null
     var value: String? = null
     var creationDate: String? = null
+    var favorite: Boolean = false
 
     fun toMcbItem(): McbItem = McbItem(
         id = McbItemId(UUID.fromString(id!!)),
         value = value!!,
-        creationDate = LocalDateTime.parse(creationDate!!)
+        creationDate = LocalDateTime.parse(creationDate!!),
+        favorite = favorite
     )
 }

@@ -8,6 +8,10 @@ class NewClipboardItemUsecase(
 ) {
 
     suspend fun addNewItem(value: String) {
-        store.addNewItem(McbItem(value = value))
+        store.addNewItem(McbItem(value = value, favorite = false))
+    }
+
+    suspend fun addNewFavoriteItem(value: String) {
+        store.addNewItem(McbItem(value = value, favorite = true))
     }
 }

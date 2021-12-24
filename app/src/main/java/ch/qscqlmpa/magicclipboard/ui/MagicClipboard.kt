@@ -10,13 +10,18 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import ch.qscqlmpa.magicclipboard.ui.common.findActivity
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardScreen
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardViewModel
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.BottomNavItem
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.AllItemsClipboardScreen
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.AllItemsClipboardViewModel
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.favoriteitems.FavoriteItemsClipboardViewModel
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.favoriteitems.FavoritesScreen
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInScreen
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInViewModel
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
@@ -33,6 +38,9 @@ fun MagicClipboard(
         screenNavigator.setNavController(navController)
         onDispose { screenNavigator.clearNavController() }
     }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     NavHost(
         navController = navController,
@@ -51,14 +59,40 @@ fun MagicClipboard(
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
             SignInScreen(viewModel)
         }
-        composable(
-            route = Destination.Clipboard.routeName
-        ) {
+        composable(route = Destination.Clipboard.routeName) {
             val newClipboardValue = getNewClipboardValueFromDeepLink()
-            val viewModel by viewModel<ClipboardViewModel> { parametersOf(newClipboardValue) }
+            val viewModel by viewModel<AllItemsClipboardViewModel> { parametersOf(newClipboardValue) }
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
-            ClipboardScreen(viewModel)
+            AllItemsClipboardScreen(
+                viewModel = viewModel,
+                currentRoute = currentRoute,
+                onItemClick = { item -> onItemClick(navController, item) }
+            )
         }
+        composable(route = Destination.FavoriteItems.routeName) {
+            val viewModel by viewModel<FavoriteItemsClipboardViewModel>()
+            HookViewModelToLifecycle(viewModel, lifecycleOwner)
+            FavoritesScreen(
+                viewModel = viewModel,
+                currentRoute = currentRoute,
+                onItemClick = { item -> onItemClick(navController, item) }
+            )
+        }
+    }
+}
+
+private fun onItemClick(
+    navController: NavController,
+    item: BottomNavItem
+) {
+    navController.navigate(item.screenRoute) {
+        navController.graph.startDestinationRoute?.let { screenRoute ->
+            popUpTo(screenRoute) {
+                saveState = true
+            }
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }
 
@@ -72,9 +106,12 @@ private fun getNewClipboardValueFromDeepLink(): String? {
     } else null
 }
 
-sealed class Destination(val routeName: String) {
+sealed class Destination(open val routeName: String) {
     object SignIn : Destination("signIn")
-    object Clipboard : Destination("clipboard")
+
+    sealed class BottomNavDestination(override val routeName: String) : Destination(routeName)
+    object Clipboard : BottomNavDestination("clipboard")
+    object FavoriteItems : BottomNavDestination("favoriteItems")
 }
 
 @Composable

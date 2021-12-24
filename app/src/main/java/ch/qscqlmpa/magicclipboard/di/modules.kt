@@ -6,10 +6,12 @@ import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClipboardItemUsecase
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.ToggleFavoriteItemUsecase
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.idlingresource.StubIdlingResource
 import ch.qscqlmpa.magicclipboard.ui.ScreenNavigator
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardViewModel
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.AllItemsClipboardViewModel
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.favoriteitems.FavoriteItemsClipboardViewModel
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
@@ -36,6 +38,7 @@ val usecasesModule = module {
     single { DeviceClipboardUsecases(androidContext(), get()) }
     single { DeleteClipboardItemUsecase(get()) }
     single { NewClipboardItemUsecase(get()) }
+    single { ToggleFavoriteItemUsecase(get()) }
 }
 
 val navigationModule = module {
@@ -43,6 +46,19 @@ val navigationModule = module {
 }
 
 val viewModelsModule = module {
-    viewModel { parameters -> ClipboardViewModel(get(), get(), get(), get(), get(), get(), get(), parameters.getOrNull()) }
     viewModel { SignInViewModel(get(), get()) }
+    viewModel { parameters ->
+        AllItemsClipboardViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            parameters.getOrNull()
+        )
+    }
+    viewModel { FavoriteItemsClipboardViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 }

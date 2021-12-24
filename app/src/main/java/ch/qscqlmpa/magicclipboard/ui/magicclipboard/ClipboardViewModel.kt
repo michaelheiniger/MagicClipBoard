@@ -5,12 +5,11 @@ import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.auth.SessionManager
 import ch.qscqlmpa.magicclipboard.auth.SessionState
-import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
-import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClipboardItemUsecase
+import ch.qscqlmpa.magicclipboard.clipboard.usecases.ToggleFavoriteItemUsecase
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.launch
 import ch.qscqlmpa.magicclipboard.ui.Destination
@@ -21,21 +20,31 @@ import java.time.LocalDateTime
 import java.util.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ClipboardViewModel(
-    private val magicClipboardRepository: MagicClipboardRepository,
+abstract class ClipboardViewModel(
     private val deviceClipboardUsecases: DeviceClipboardUsecases,
     private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
-    private val newClipboardItemUsecase: NewClipboardItemUsecase,
+    private val toggleFavoriteItemUsecase: ToggleFavoriteItemUsecase,
     private val idlingResource: McbIdlingResource,
     private val sessionManager: SessionManager,
     private val screenNavigator: ScreenNavigator,
-    private val newClipboardValue: String?
+    newClipboardValue: String?
 ) : BaseViewModel() {
 
-    private val viewModelState = MutableStateFlow(
+    private lateinit var observeCliboardItemsJob: Job
+    private lateinit var observeLoginJob: Job
+    private lateinit var recompositionSchedulerJob: Job
+
+    protected val viewModelState = MutableStateFlow(
         MagicClipboardViewModelState(
             deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue(),
             newClipboardValue = newClipboardValue
@@ -50,10 +59,6 @@ class ClipboardViewModel(
             viewModelState.value.toUiState()
         )
 
-    private lateinit var observeCliboardItemsJob: Job
-    private lateinit var observeLoginJob: Job
-    private lateinit var recompositionSchedulerJob: Job
-
     fun onDeleteItem(itemId: McbItemId) {
         viewModelScope.launch(
             beforeLaunch = { idlingResource.increment("Deleting item $itemId") }
@@ -62,12 +67,9 @@ class ClipboardViewModel(
         }
     }
 
-    fun onPasteValueToMcb(value: String) {
-        if (value == newClipboardValue) viewModelState.update { it.copy(newClipboardValue = null) }
-        viewModelScope.launch(
-            beforeLaunch = { idlingResource.increment("Pasting to MagicClipboard") }
-        ) {
-            newClipboardItemUsecase.addNewItem(value)
+    fun onItemFavoriteToggle(item: McbItem) {
+        viewModelScope.launch {
+            toggleFavoriteItemUsecase.toggleItemFavoriteItem(item)
         }
     }
 
@@ -102,7 +104,7 @@ class ClipboardViewModel(
         }
     }
 
-    fun onLogout() {
+    fun onSignOut() {
         viewModelScope.launch {
             sessionManager.signOut()
         }
@@ -129,7 +131,7 @@ class ClipboardViewModel(
 
         idlingResource.increment("Loading Item list")
         observeCliboardItemsJob = viewModelScope.launch {
-            magicClipboardRepository.observeItems().collect { items ->
+            observeItems().collect { items ->
                 viewModelState.update {
                     it.copy(
                         previousItemsState = it.currentItemsState,
@@ -145,6 +147,8 @@ class ClipboardViewModel(
         viewModelState.update { it.copy(deviceClipboardValue = deviceClipboardUsecases.getDeviceClipboardValue()) }
     }
 
+    abstract fun observeItems(): Flow<List<McbItem>>
+
     override fun onStop() {
         super.onStop()
         observeCliboardItemsJob.cancel()
@@ -158,7 +162,6 @@ class ClipboardViewModel(
         periodMs: Long = 60_000 // Every minute since the resolution of the time-based content is one minute
     ) = flow {
         delay(initialDelayMs)
-
         var counter = start
         while (true) {
             emit(counter)
@@ -202,7 +205,7 @@ sealed interface ItemMessage : Message {
     ) : ItemMessage
 }
 
-private data class MagicClipboardViewModelState(
+data class MagicClipboardViewModelState(
     val currentDateTime: LocalDateTime = LocalDateTime.now(),
     val previousItemsState: List<McbItem> = emptyList(),
     val currentItemsState: List<McbItem> = emptyList(),

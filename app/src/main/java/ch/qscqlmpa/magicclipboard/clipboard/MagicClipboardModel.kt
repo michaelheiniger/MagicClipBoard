@@ -9,7 +9,8 @@ import java.util.*
 data class McbItem(
     val id: McbItemId = McbItemId(UUID.randomUUID()),
     val value: String,
-    val creationDate: LocalDateTime = LocalDateTime.now()
+    val creationDate: LocalDateTime = LocalDateTime.now(),
+    val favorite: Boolean = false
 ) {
     val valueAsQrCode: Bitmap by lazy {
         val writer = QRCodeWriter()
