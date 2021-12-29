@@ -21,7 +21,7 @@ jobs:
         uses: timheuer/base64-to-file@v1.1
         with:
           fileName: 'keystore.jks'
-          fileDir: '.'
+          fileDir: 'app/keystore'
           encodedString: ${{ secrets.KEYSTORE }}
       - name: Decode google-services.json file from secrets (base 64 encoded)
         id: decode_google_services_json
