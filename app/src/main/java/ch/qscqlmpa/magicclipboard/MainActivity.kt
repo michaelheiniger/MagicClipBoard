@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            var darkTheme by remember { mutableStateOf(true) }
+            var darkTheme by remember { mutableStateOf(false) }
             MagicClipBoardTheme(darkTheme = darkTheme) {
                 MagicClipboard(
                     lifecycleOwner = this,
