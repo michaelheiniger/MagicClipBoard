@@ -11,7 +11,7 @@ object Versions {
     // Gradle plugins
     const val androidGradlePlugin = "7.0.4"
     const val ktlintGradlePlugin = "10.1.0"
-    const val detekt = "1.18.1"
+    const val detekt = "1.19.0"
     const val androidJUnit5Plugin = "1.7.1.1"
 
     // Libraries

@@ -18,7 +18,12 @@ val debugClipBoardItems = listOf(
     ),
     McbItem(
         id = McbItemId(UUID.fromString("838b3e00-5ffa-4aeb-973c-a31a59a1559e")),
-        value = "entry 3 which is a much longeeeeeeeeeeeeeeeeeer entry\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada",
+        value = """
+            entry 3 which is a much longeeeeeeeeeeeeeeeeeer entry
+            bla bidi bla bla blaaaa didi dudu dada
+            bla bidi bla bla blaaaa didi dudu dada
+            bla bidi bla bla blaaaa didi dudu dada
+        """.trimIndent(),
         creationDate = LocalDateTime.of(2021, 1, 12, 16, 15)
     ),
     McbItem(

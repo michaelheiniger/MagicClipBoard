@@ -38,7 +38,12 @@ val item2 = McbItem(
 )
 val item3 = McbItem(
     id = idItem3,
-    value = "[item 3] which is a much longeeeeeeeeeeeeeeeeeer item\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada",
+    value = """
+        [item 3] which is a much longeeeeeeeeeeeeeeeeeer item
+        bla bidi bla bla blaaaa didi dudu dada
+        bla bidi bla bla blaaaa didi dudu dada
+        bla bidi bla bla blaaaa didi dudu dada
+    """.trimIndent(),
     creationDate = LocalDateTime.of(
         LocalDateTime.now().year,
         LocalDateTime.now().month,

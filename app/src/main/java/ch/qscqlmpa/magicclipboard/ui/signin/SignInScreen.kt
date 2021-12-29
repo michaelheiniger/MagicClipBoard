@@ -85,7 +85,7 @@ private fun SignInBody(
                                     val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
                                     onSignIn(credential)
                                 } catch (e: ApiException) {
-                                    Logger.debug { "Google sign-in has failed" }
+                                    Logger.error(e) { "Google sign-in has failed" }
                                     showSignInFailedDialog = true
                                 }
                             } else {

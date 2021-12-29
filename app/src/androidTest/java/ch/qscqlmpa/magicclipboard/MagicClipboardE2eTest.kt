@@ -1,6 +1,22 @@
 package ch.qscqlmpa.magicclipboard
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.filter
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performScrollToKey
+import androidx.compose.ui.test.swipeLeft
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import org.junit.Test
 
@@ -15,7 +31,14 @@ class MagicClipboardE2eTest : BaseE2eTest() {
 
         testRule.onNodeWithText("[item 1]").assertExists().assertIsDisplayed()
         testRule.onNodeWithText("[item 2] which is a bit longer").assertExists().assertIsDisplayed()
-        testRule.onNodeWithText("[item 3] which is a much longeeeeeeeeeeeeeeeeeer item\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada")
+        testRule.onNodeWithText(
+            """
+            [item 3] which is a much longeeeeeeeeeeeeeeeeeer item
+            bla bidi bla bla blaaaa didi dudu dada
+            bla bidi bla bla blaaaa didi dudu dada
+            bla bidi bla bla blaaaa didi dudu dada
+            """.trimIndent()
+        )
             .assertExists().assertIsDisplayed()
     }
 

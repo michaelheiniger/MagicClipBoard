@@ -18,8 +18,8 @@ import ch.qscqlmpa.magicclipboard.item4
 import ch.qscqlmpa.magicclipboard.item5
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.AllItemsClipboardBody
-import java.time.LocalDateTime
 import org.junit.Test
+import java.time.LocalDateTime
 
 internal class ClipboardScreenTest : BaseUiUnitTest() {
 
@@ -87,7 +87,12 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
         assertItemValue(item2.id, "[item 2] which is a bit longer")
         assertItemValue(
             item3.id,
-            "[item 3] which is a much longeeeeeeeeeeeeeeeeeer item\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada\n bla bidi bla bla blaaaa didi dudu dada"
+            """
+                [item 3] which is a much longeeeeeeeeeeeeeeeeeer item
+                bla bidi bla bla blaaaa didi dudu dada
+                bla bidi bla bla blaaaa didi dudu dada
+                bla bidi bla bla blaaaa didi dudu dada
+            """.trimIndent()
         )
         assertItemValue(item4.id, "[item 4]")
     }
@@ -150,9 +155,10 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
                     username = username,
                     newClipboardValue = null
                 ),
-                onDeleteItem = { deletedItem = it },
                 currentRoute = null,
                 onBottomBarItemClick = {},
+                onToggleDarkTheme = {},
+                onDeleteItem = { deletedItem = it },
                 onItemFavoriteToggle = { favoriteItem = it },
                 onPasteItemToDeviceClipboard = { pastedItemToDeviceClipboard = it },
                 onPasteValueToMcb = { pastedValueFromDeviceClipboard = it },

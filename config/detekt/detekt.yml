@@ -91,6 +91,7 @@ complexity:
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
+    ignoreAnnotated: [ 'Composable' ]
     nestingFunctions:
       - 'also'
       - 'apply'
@@ -110,14 +111,14 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
-    ignoreAnnotated: [ "androidx.compose.runtime.Composable", "org.junit" ]
+    ignoreAnnotated: [ 'Composable', 'org.junit' ]
   LongParameterList:
     active: true
     functionThreshold: 6
-    constructorThreshold: 7
+    constructorThreshold: 10
     ignoreDefaultParameters: false
     ignoreDataClasses: true
-    ignoreAnnotated: [ "androidx.compose.runtime.Composable" ]
+    ignoreAnnotated: [ 'Composable' ]
   MethodOverloading:
     active: false
     threshold: 6
@@ -555,7 +556,7 @@ potential-bugs:
   LateinitUsage:
     active: false
     excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
-    excludeAnnotatedProperties: [ ]
+    ignoreAnnotated: [ ]
     ignoreOnClassesPattern: ''
   MapGetWithNotNullAssertionOperator:
     active: false
@@ -643,7 +644,7 @@ style:
     ignoreOverridableFunction: true
     ignoreActualFunction: true
     excludedFunctions: ''
-    excludeAnnotatedFunction:
+    ignoreAnnotated:
       - 'dagger.Provides'
   LibraryCodeMustSpecifyReturnType:
     active: true
@@ -733,10 +734,10 @@ style:
     active: false
   UnderscoresInNumericLiterals:
     active: false
-    acceptableDecimalLength: 5
+    acceptableLength: 5
   UnnecessaryAbstractClass:
     active: false # annoying
-    excludeAnnotatedClasses:
+    ignoreAnnotated:
       - 'dagger.Module'
   UnnecessaryAnnotationUseSiteTarget:
     active: false
@@ -767,7 +768,7 @@ style:
     active: false
   UseDataClass:
     active: false
-    excludeAnnotatedClasses: [ ]
+    ignoreAnnotated: [ ]
     allowVars: false
   UseEmptyCounterpart:
     active: false

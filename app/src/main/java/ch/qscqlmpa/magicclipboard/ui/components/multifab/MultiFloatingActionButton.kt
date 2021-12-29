@@ -2,13 +2,32 @@ package ch.qscqlmpa.magicclipboard.ui.components.multifab
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExtendedFloatingActionButton
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,7 +52,7 @@ enum class MultiFabState {
     COLLAPSED, EXPANDED
 }
 
-private const val animationDurationMs = 200
+private const val ANIMATION_DURATION_MS = 200
 
 /**
  * Credits: https://github.com/ComposeAcademy/ComposeCompanion
@@ -49,7 +68,7 @@ fun MultiFloatingActionButton(
 ) {
     val transition: Transition<MultiFabState> = updateTransition(targetState = targetState, label = "transition")
     val rotation: Float by transition.animateFloat(
-        transitionSpec = { tween(durationMillis = animationDurationMs, easing = LinearEasing) },
+        transitionSpec = { tween(durationMillis = ANIMATION_DURATION_MS, easing = LinearEasing) },
         label = "rotation"
     ) { state -> if (state == MultiFabState.EXPANDED) 90f else 0f }
 
@@ -59,12 +78,12 @@ fun MultiFloatingActionButton(
                 visible = targetState == MultiFabState.EXPANDED,
                 enter = slideInVertically(
                     initialOffsetY = { height -> height },
-                    animationSpec = TweenSpec(durationMillis = animationDurationMs, easing = LinearEasing)
-                ) + fadeIn(animationSpec = TweenSpec(durationMillis = animationDurationMs, easing = LinearEasing)),
+                    animationSpec = TweenSpec(durationMillis = ANIMATION_DURATION_MS, easing = LinearEasing)
+                ) + fadeIn(animationSpec = TweenSpec(durationMillis = ANIMATION_DURATION_MS, easing = LinearEasing)),
                 exit = slideOutVertically(
                     targetOffsetY = { height -> height },
-                    animationSpec = TweenSpec(durationMillis = animationDurationMs, easing = LinearEasing)
-                ) + fadeOut(animationSpec = TweenSpec(durationMillis = animationDurationMs, easing = LinearEasing))
+                    animationSpec = TweenSpec(durationMillis = ANIMATION_DURATION_MS, easing = LinearEasing)
+                ) + fadeOut(animationSpec = TweenSpec(durationMillis = ANIMATION_DURATION_MS, easing = LinearEasing))
             ) {
                 MiniFabItem(item, onFabItemClicked)
             }

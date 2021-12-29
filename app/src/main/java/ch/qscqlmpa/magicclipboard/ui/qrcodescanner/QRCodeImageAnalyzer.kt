@@ -3,7 +3,11 @@ package ch.qscqlmpa.magicclipboard.ui.qrcodescanner
 import android.graphics.ImageFormat
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.google.zxing.*
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.ChecksumException
+import com.google.zxing.FormatException
+import com.google.zxing.NotFoundException
+import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.multi.qrcode.QRCodeMultiReader
 import org.tinylog.kotlin.Logger
@@ -14,7 +18,10 @@ class QRCodeImageAnalyzer(
 
     @Suppress("SwallowedException")
     override fun analyze(image: ImageProxy) {
-        if (image.format == ImageFormat.YUV_420_888 || image.format == ImageFormat.YUV_422_888 || image.format == ImageFormat.YUV_444_888) {
+        if (image.format == ImageFormat.YUV_420_888 ||
+            image.format == ImageFormat.YUV_422_888 ||
+            image.format == ImageFormat.YUV_444_888
+        ) {
             val byteBuffer = image.planes[0].buffer
             val imageData = ByteArray(byteBuffer.capacity())
             byteBuffer[imageData]
