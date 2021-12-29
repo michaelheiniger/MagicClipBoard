@@ -258,6 +258,13 @@ private fun ClipboardItemContent(
                 }
                 FavoriteIcon(item, onItemFavoriteToggle)
             }
+            Divider(
+                color = Color.LightGray,
+                modifier = Modifier
+                    .padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                    .fillMaxWidth()
+                    .height(1.dp)
+            )
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
