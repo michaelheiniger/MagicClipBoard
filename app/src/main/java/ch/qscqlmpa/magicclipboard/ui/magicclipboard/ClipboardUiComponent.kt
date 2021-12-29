@@ -3,10 +3,16 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +29,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -137,8 +144,12 @@ private fun ClipboardItem(
                 DismissDirection.EndToStart -> R.string.delete_item
             }
             val icon = when (direction) {
-                DismissDirection.StartToEnd -> Icons.Default.Favorite
+                DismissDirection.StartToEnd -> if (item.favorite) Icons.Default.FavoriteBorder else Icons.Default.Favorite
                 DismissDirection.EndToStart -> Icons.Default.Delete
+            }
+            val iconTint = when (direction) {
+                DismissDirection.StartToEnd -> Color.Red
+                DismissDirection.EndToStart -> Color.White
             }
             val scale by animateFloatAsState(
                 if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
@@ -159,14 +170,16 @@ private fun ClipboardItem(
                         fontSize = 20.sp,
                         modifier = Modifier.scale(scale)
                     )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 }
                 Icon(
                     imageVector = icon,
-                    tint = Color.White,
+                    tint = iconTint,
                     contentDescription = stringResource(R.string.delete_item_cd),
                     modifier = Modifier.scale(scale)
                 )
                 if (direction == DismissDirection.StartToEnd) {
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = stringResource(text),
                         color = Color.White,
@@ -243,14 +256,7 @@ private fun ClipboardItemContent(
                         maxLines = if (expanded) Int.MAX_VALUE else 3
                     )
                 }
-                val favoriteCd = if (item.favorite) R.string.remove_from_favorites else R.string.add_to_favorites
-                IconButton(onClick = { onItemFavoriteToggle(item) }) {
-                    Icon(
-                        imageVector = if (item.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        tint = Color.Red,
-                        contentDescription = stringResource(favoriteCd)
-                    )
-                }
+                FavoriteIcon(item, onItemFavoriteToggle)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -272,24 +278,85 @@ private fun ClipboardItemContent(
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Share,
+                        tint = Color.Green,
                         contentDescription = stringResource(R.string.share_clipboard_item_cd)
                     )
                 }
-                IconButton(
-                    modifier = Modifier.testTag("${UiTags.clipboardItem}_${item.id.value}_copyToDevice"),
-                    onClick = { onPasteItemToDeviceClipboard(item) }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_baseline_content_copy_24),
-                        contentDescription = stringResource(R.string.load_clipboard_item_into_device_clipboard_cd)
-                    )
-                }
+                CopyToDeviceClipboardIcon(item, onPasteItemToDeviceClipboard)
             }
         }
     }
 
     if (showQrCodeModal) {
         ShowQrCodeModal(item, onCloseClick = { showQrCodeModal = false })
+    }
+}
+
+@Composable
+private fun CopyToDeviceClipboardIcon(
+    item: McbItem,
+    onPasteItemToDeviceClipboard: (McbItem) -> Unit
+) {
+    val transitionState by remember { mutableStateOf(MutableTransitionState(FavoriteIconAnimState.SteadyState)) }
+    val transition = updateTransition(transitionState, label = "Copy to device icon transition")
+    val scale by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 200, easing = LinearEasing) },
+        label = "Copy to device icon scale"
+    ) { targetState -> if (targetState == FavoriteIconAnimState.Transitioning) 2f else 1f }
+    if (transitionState.currentState == FavoriteIconAnimState.Transitioning) {
+        transitionState.targetState = FavoriteIconAnimState.SteadyState
+    }
+    IconButton(
+        modifier = Modifier.testTag("${UiTags.clipboardItem}_${item.id.value}_copyToDevice").scale(scale),
+        onClick = {
+            onPasteItemToDeviceClipboard(item)
+            transitionState.targetState = FavoriteIconAnimState.Transitioning
+        }
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_baseline_content_copy_24),
+            tint = MaterialTheme.colors.primary,
+            contentDescription = stringResource(R.string.load_clipboard_item_into_device_clipboard_cd)
+        )
+    }
+}
+
+private enum class FavoriteIconAnimState { SteadyState, Transitioning }
+
+@Composable
+private fun FavoriteIcon(
+    item: McbItem,
+    onItemFavoriteToggle: (McbItem) -> Unit
+) {
+    val transitionState by remember { mutableStateOf(MutableTransitionState(FavoriteIconAnimState.SteadyState)) }
+    val transition: Transition<FavoriteIconAnimState> = updateTransition(transitionState, label = "Favorite icon transition")
+    val scale by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 300, easing = LinearEasing) },
+        label = "Favorite icon scale"
+    ) { targetState -> if (targetState == FavoriteIconAnimState.Transitioning) 3f else 1f }
+    val rotation by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 300, easing = LinearEasing) },
+        label = "Favorite icon rotation"
+    ) { targetState ->
+        when (targetState) {
+            FavoriteIconAnimState.SteadyState -> 0f
+            FavoriteIconAnimState.Transitioning -> -360f
+        }
+    }
+    if (transitionState.currentState == FavoriteIconAnimState.Transitioning) {
+        transitionState.targetState = FavoriteIconAnimState.SteadyState
+    }
+    val favoriteCd = if (item.favorite) R.string.remove_from_favorites else R.string.add_to_favorites
+    IconButton(onClick = {
+        onItemFavoriteToggle(item)
+        transitionState.targetState = FavoriteIconAnimState.Transitioning
+    }) {
+        Icon(
+            modifier = Modifier.scale(scale).rotate(rotation),
+            imageVector = if (item.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+            tint = Color.Red,
+            contentDescription = stringResource(favoriteCd)
+        )
     }
 }
 
