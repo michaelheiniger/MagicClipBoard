@@ -2,7 +2,7 @@ package ch.qscqlmpa.magicclipboard.viewmodel
 
 import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModel
-import org.tinylog.kotlin.Logger
+import org.tinylog.Logger
 
 abstract class BaseViewModel : ViewModel() {
 

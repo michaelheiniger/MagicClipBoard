@@ -7,7 +7,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
-import org.tinylog.kotlin.Logger
+import org.tinylog.Logger
 
 sealed interface SessionState {
     object Unauthenticated : SessionState

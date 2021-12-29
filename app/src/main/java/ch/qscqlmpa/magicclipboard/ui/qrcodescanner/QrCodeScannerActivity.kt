@@ -22,7 +22,7 @@ import ch.qscqlmpa.magicclipboard.databinding.ActivityQrCodeScannerBinding
 import ch.qscqlmpa.magicclipboard.ui.qrcodescanner.QrCodeScannerActivity.Companion.RESULT_CANCELLED
 import ch.qscqlmpa.magicclipboard.ui.qrcodescanner.QrCodeScannerActivity.Companion.RESULT_OK
 import com.google.common.util.concurrent.ListenableFuture
-import org.tinylog.kotlin.Logger
+import org.tinylog.Logger
 
 class QrCodeScannerActivity : ComponentActivity() {
 

@@ -27,7 +27,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
-import org.tinylog.kotlin.Logger
+import org.tinylog.Logger
 
 @Preview(showBackground = true)
 @Composable

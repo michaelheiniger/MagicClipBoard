@@ -1,7 +1,7 @@
 package ch.qscqlmpa.magicclipboard.idlingresource
 
 import androidx.test.espresso.idling.CountingIdlingResource
-import org.tinylog.kotlin.Logger
+import org.tinylog.Logger
 
 class TestIdlingResource(resourceName: String) : McbIdlingResource {
 

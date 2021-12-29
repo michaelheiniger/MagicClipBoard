@@ -10,7 +10,7 @@ import com.google.zxing.NotFoundException
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.multi.qrcode.QRCodeMultiReader
-import org.tinylog.kotlin.Logger
+import org.tinylog.Logger
 
 class QRCodeImageAnalyzer(
     private val listener: QRCodeFoundListener
