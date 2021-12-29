@@ -26,16 +26,35 @@ android {
 
     val keystoreProperties = Properties()
     val keystorePropertiesFile = rootProject.file("key.properties")
-    if (keystorePropertiesFile.exists()) {
-        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-    }
 
     signingConfigs {
+        register("release") {
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+            } else {
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                storeFile = file("keystore/keystore.jks")
+            }
+        }
         named("debug") {
-            storePassword = keystoreProperties.getProperty("storePassword")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            storeFile = file(keystoreProperties.getProperty("storeFile"))
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+            } else {
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                storeFile = file("keystore/keystore.jks")
+            }
         }
     }
 
