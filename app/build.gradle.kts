@@ -39,7 +39,7 @@ android {
                 storePassword = System.getenv("SIGNING_STORE_PASSWORD")
                 keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
                 keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-                storeFile = file("keystore/keystore.jks")
+                storeFile = file("keystore.jks")
             }
         }
         named("debug") {
@@ -53,7 +53,7 @@ android {
                 storePassword = System.getenv("SIGNING_STORE_PASSWORD")
                 keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
                 keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-                storeFile = file("keystore/keystore.jks")
+                storeFile = file("keystore.jks")
             }
         }
     }
