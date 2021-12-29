@@ -60,7 +60,10 @@ fun NoClipboardItems(
         elevation = 4.dp
     ) {
         Column(modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
-            Text(stringResource(text))
+            Text(
+                text = stringResource(text),
+                color = MaterialTheme.colors.onPrimary,
+            )
         }
     }
 }
@@ -240,6 +243,7 @@ private fun ClipboardItemContent(
                     Text(
                         modifier = Modifier.testTag(clipboardItemCreationDateTag(item)),
                         text = formatClipBoardDate(item.creationDate, currentDateTime),
+                        color = MaterialTheme.colors.onSurface,
                         fontSize = 10.sp
                     )
                     Text(
@@ -252,6 +256,7 @@ private fun ClipboardItemContent(
                                 )
                             ),
                         text = item.value,
+                        color = MaterialTheme.colors.onSurface,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = if (expanded) Int.MAX_VALUE else 3
                     )
@@ -272,6 +277,7 @@ private fun ClipboardItemContent(
                 IconButton(onClick = { showQrCodeModal = true }) {
                     Icon(
                         painter = painterResource(R.drawable.ic_baseline_qr_code_24),
+                        tint = MaterialTheme.colors.onSurface,
                         contentDescription = stringResource(R.string.show_value_as_qr_code_cd)
                     )
                 }

@@ -55,9 +55,9 @@ import ch.qscqlmpa.magicclipboard.ui.common.YesNoDialog
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.BottomNavItem
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardBottomBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardItemList
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardTopBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardUiState
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.NoClipboardItems
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.SignedInTopBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.favoriteitems.SnackbarMessageDisplayer
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import java.time.LocalDateTime
@@ -79,6 +79,7 @@ private fun AllItemsClipboardBodyPreview() {
             ),
             currentRoute = Destination.Clipboard.routeName,
             onBottomBarItemClick = {},
+            onToggleDarkTheme = {},
             onDeleteItem = {},
             onItemFavoriteToggle = {},
             onPasteItemToDeviceClipboard = {},
@@ -95,13 +96,15 @@ private fun AllItemsClipboardBodyPreview() {
 fun AllItemsClipboardScreen(
     viewModel: AllItemsClipboardViewModel,
     currentRoute: String?,
-    onItemClick: (BottomNavItem) -> Unit
+    onBottomBarItemClick: (BottomNavItem) -> Unit,
+    onToggleDarkTheme: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     AllItemsClipboardBody(
         uiState = uiState,
         currentRoute = currentRoute,
-        onBottomBarItemClick = onItemClick,
+        onBottomBarItemClick = onBottomBarItemClick,
+        onToggleDarkTheme = onToggleDarkTheme,
         onDeleteItem = viewModel::onDeleteItem,
         onItemFavoriteToggle = viewModel::onItemFavoriteToggle,
         onPasteValueToMcb = viewModel::onPasteValueToMcb,
@@ -118,6 +121,7 @@ fun AllItemsClipboardBody(
     uiState: MagicClipboardUiState,
     currentRoute: String?,
     onBottomBarItemClick: (BottomNavItem) -> Unit,
+    onToggleDarkTheme: () -> Unit,
     onDeleteItem: (McbItemId) -> Unit,
     onItemFavoriteToggle: (McbItem) -> Unit,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit,
@@ -144,8 +148,9 @@ fun AllItemsClipboardBody(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            ClipboardTopBar(
+            SignedInTopBar(
                 username = uiState.username,
+                onToggleDarkTheme = onToggleDarkTheme,
                 onSignOut = onSignOut
             )
         },

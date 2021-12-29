@@ -28,10 +28,10 @@ import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.BottomNavItem
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardBottomBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardItemList
-import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardTopBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ItemMessage
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardUiState
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.NoClipboardItems
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.SignedInTopBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.DeviceClipboardValue
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import java.time.LocalDateTime
@@ -51,7 +51,8 @@ private fun FavoritesBodyPreview() {
                 newClipboardValue = null
             ),
             currentRoute = Destination.Clipboard.routeName,
-            onItemClick = {},
+            onBottomBarItemClick = {},
+            onToggleDarkTheme = {},
             onDeleteItem = {},
             onItemFavoriteToggle = {},
             onPasteItemToDeviceClipboard = {},
@@ -66,13 +67,15 @@ private fun FavoritesBodyPreview() {
 fun FavoritesScreen(
     viewModel: FavoriteItemsClipboardViewModel,
     currentRoute: String?,
-    onItemClick: (BottomNavItem) -> Unit
+    onItemClick: (BottomNavItem) -> Unit,
+    onToggleDarkTheme: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     FavoritesBody(
         uiState = uiState,
         currentRoute = currentRoute,
-        onItemClick = onItemClick,
+        onBottomBarItemClick = onItemClick,
+        onToggleDarkTheme = onToggleDarkTheme,
         onDeleteItem = viewModel::onDeleteItem,
         onItemFavoriteToggle = viewModel::onItemFavoriteToggle,
         onPasteItemToDeviceClipboard = viewModel::onPasteItemToDeviceClipboard,
@@ -86,7 +89,8 @@ fun FavoritesScreen(
 fun FavoritesBody(
     uiState: MagicClipboardUiState,
     currentRoute: String?,
-    onItemClick: (BottomNavItem) -> Unit,
+    onBottomBarItemClick: (BottomNavItem) -> Unit,
+    onToggleDarkTheme: () -> Unit,
     onDeleteItem: (McbItemId) -> Unit,
     onItemFavoriteToggle: (McbItem) -> Unit,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit,
@@ -98,13 +102,14 @@ fun FavoritesBody(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            ClipboardTopBar(
+            SignedInTopBar(
                 username = uiState.username,
+                onToggleDarkTheme = onToggleDarkTheme,
                 onSignOut = onSignOut
             )
         },
         snackbarHost = { DefaultSnackbar(snackbarHostState = scaffoldState.snackbarHostState) },
-        bottomBar = { ClipboardBottomBar(currentRoute, onItemClick) }
+        bottomBar = { ClipboardBottomBar(currentRoute, onBottomBarItemClick) }
     ) { innerPadding ->
         Column(
             modifier = Modifier

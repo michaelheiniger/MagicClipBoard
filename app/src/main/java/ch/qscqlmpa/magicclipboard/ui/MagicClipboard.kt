@@ -31,7 +31,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun MagicClipboard(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    screenNavigator: ScreenNavigator
+    screenNavigator: ScreenNavigator,
+    onToggleDarkTheme: () -> Unit,
 ) {
     val navController = rememberNavController()
     DisposableEffect(navController) {
@@ -57,7 +58,10 @@ fun MagicClipboard(
         ) {
             val viewModel by viewModel<SignInViewModel>()
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
-            SignInScreen(viewModel)
+            SignInScreen(
+                viewModel = viewModel,
+                onToggleDarkTheme = onToggleDarkTheme
+            )
         }
         composable(route = Destination.Clipboard.routeName) {
             val newClipboardValue = getNewClipboardValueFromDeepLink()
@@ -66,7 +70,8 @@ fun MagicClipboard(
             AllItemsClipboardScreen(
                 viewModel = viewModel,
                 currentRoute = currentRoute,
-                onItemClick = { item -> onItemClick(navController, item) }
+                onBottomBarItemClick = { item -> onItemClick(navController, item) },
+                onToggleDarkTheme = onToggleDarkTheme
             )
         }
         composable(route = Destination.FavoriteItems.routeName) {
@@ -75,7 +80,8 @@ fun MagicClipboard(
             FavoritesScreen(
                 viewModel = viewModel,
                 currentRoute = currentRoute,
-                onItemClick = { item -> onItemClick(navController, item) }
+                onItemClick = { item -> onItemClick(navController, item) },
+                onToggleDarkTheme = onToggleDarkTheme
             )
         }
     }

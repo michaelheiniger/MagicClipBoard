@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +19,7 @@ import ch.qscqlmpa.magicclipboard.launch
 import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
 import ch.qscqlmpa.magicclipboard.ui.common.LoadingDialog
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.SignedOutTopBar
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -37,6 +37,7 @@ private fun SignInBodyPreview() {
             uiState = LoginUiState(
                 isLoading = false,
             ),
+            onToggleDarkTheme = {},
             onSignIn = {},
         )
     }
@@ -44,10 +45,12 @@ private fun SignInBodyPreview() {
 
 @Composable
 fun SignInScreen(
-    viewModel: SignInViewModel
+    viewModel: SignInViewModel,
+    onToggleDarkTheme: () -> Unit,
 ) {
     SignInBody(
         uiState = viewModel.uiState.collectAsState().value,
+        onToggleDarkTheme = onToggleDarkTheme,
         onSignIn = viewModel::onSignIn,
     )
 }
@@ -55,11 +58,10 @@ fun SignInScreen(
 @Composable
 private fun SignInBody(
     uiState: LoginUiState,
+    onToggleDarkTheme: () -> Unit,
     onSignIn: (AuthCredential) -> Unit
 ) {
-    Scaffold(
-        topBar = { MagicClipboardSimpleTopBar() }
-    ) { innerPadding ->
+    Scaffold(topBar = { SignedOutTopBar(onToggleDarkTheme) }) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -113,18 +115,4 @@ private fun SignInBody(
             }
         }
     }
-}
-
-@Composable
-private fun MagicClipboardSimpleTopBar() {
-    TopAppBar(
-        title = {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = stringResource(R.string.app_name))
-            }
-        }
-    )
 }
