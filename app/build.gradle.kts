@@ -137,7 +137,8 @@ dependencies {
     implementation("org.tinylog:tinylog-impl:2.4.1")
     implementation(platform("com.google.firebase:firebase-bom:29.0.0")) // Firebase platform BoM
 
-    testImplementation("android.arch.core:core-testing:1.1.1") // Required to use androidx.arch.core.executor.testing.InstantTaskExecutorRule in ViewModel unit tests
+    // Required to use androidx.arch.core.executor.testing.InstantTaskExecutorRule in ViewModel unit tests
+    testImplementation("android.arch.core:core-testing:1.1.1")
     testImplementation("io.insert-koin:koin-test-junit5:3.1.4")
     testImplementation("io.mockk:mockk:1.12.1")
     testImplementation("org.assertj:assertj-core:3.21.0")
@@ -147,7 +148,8 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.5")
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0") // Espresso (needed for CounterIdlingResource)
+    // Espresso (needed for CounterIdlingResource)
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
     androidTestImplementation("androidx.test:core-ktx:1.4.0")
     androidTestImplementation("io.insert-koin:koin-test-junit4:3.1.4")
