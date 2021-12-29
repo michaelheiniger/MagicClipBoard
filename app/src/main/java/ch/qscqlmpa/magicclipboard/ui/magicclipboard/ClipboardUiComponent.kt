@@ -281,14 +281,16 @@ private fun ClipboardItemContent(
                         contentDescription = stringResource(R.string.show_value_as_qr_code_cd)
                     )
                 }
-                IconButton(onClick = {
-                    val intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, item.value)
-                        type = "text/plain"
+                IconButton(
+                    onClick = {
+                        val intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, item.value)
+                            type = "text/plain"
+                        }
+                        ContextCompat.startActivity(context, intent, null)
                     }
-                    ContextCompat.startActivity(context, intent, null)
-                }) {
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Share,
                         tint = Color.Green,
@@ -360,10 +362,12 @@ private fun FavoriteIcon(
         transitionState.targetState = FavoriteIconAnimState.SteadyState
     }
     val favoriteCd = if (item.favorite) R.string.remove_from_favorites else R.string.add_to_favorites
-    IconButton(onClick = {
-        onItemFavoriteToggle(item)
-        transitionState.targetState = FavoriteIconAnimState.Transitioning
-    }) {
+    IconButton(
+        onClick = {
+            onItemFavoriteToggle(item)
+            transitionState.targetState = FavoriteIconAnimState.Transitioning
+        }
+    ) {
         Icon(
             modifier = Modifier.scale(scale).rotate(rotation),
             imageVector = if (item.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
