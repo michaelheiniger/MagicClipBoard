@@ -55,8 +55,8 @@ tasks.register<Delete>("clean") {
 }
 
 ktlint {
-    debug.set(true)
-    verbose.set(true)
+    debug.set(false)
+    verbose.set(false)
 }
 
 detekt {
