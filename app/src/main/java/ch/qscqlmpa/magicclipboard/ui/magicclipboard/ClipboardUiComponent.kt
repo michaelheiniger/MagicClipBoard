@@ -49,6 +49,7 @@ import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
+import ch.qscqlmpa.magicclipboard.ui.components.SingleStateWithTransitionAnimState
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import java.time.LocalDateTime
 
@@ -364,23 +365,24 @@ private fun CopyToDeviceClipboardIcon(
     item: McbItem,
     onPasteItemToDeviceClipboard: (McbItem) -> Unit
 ) {
-    val transitionState by remember { mutableStateOf(MutableTransitionState(FavoriteIconAnimState.SteadyState)) }
+    val transitionState by remember { mutableStateOf(MutableTransitionState(SingleStateWithTransitionAnimState.SteadyState)) }
     val transition = updateTransition(transitionState, label = "Copy to device icon transition")
     val scale by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 200, easing = LinearEasing) },
         label = "Copy to device icon scale"
-    ) { targetState -> if (targetState == FavoriteIconAnimState.Transitioning) 2f else 1f }
-    if (transitionState.currentState == FavoriteIconAnimState.Transitioning) {
-        transitionState.targetState = FavoriteIconAnimState.SteadyState
+    ) { targetState -> if (targetState == SingleStateWithTransitionAnimState.Transitioning) 2f else 1f }
+    if (transitionState.currentState == SingleStateWithTransitionAnimState.Transitioning) {
+        transitionState.targetState = SingleStateWithTransitionAnimState.SteadyState
     }
     IconButton(
-        modifier = Modifier.testTag("${UiTags.clipboardItem}_${item.id.value}_copyToDevice").scale(scale),
+        modifier = Modifier.testTag("${UiTags.clipboardItem}_${item.id.value}_copyToDevice"),
         onClick = {
             onPasteItemToDeviceClipboard(item)
-            transitionState.targetState = FavoriteIconAnimState.Transitioning
+            transitionState.targetState = SingleStateWithTransitionAnimState.Transitioning
         }
     ) {
         Icon(
+            modifier = Modifier.scale(scale),
             painter = painterResource(R.drawable.ic_baseline_content_copy_24),
             tint = MaterialTheme.colors.primary,
             contentDescription = stringResource(R.string.load_clipboard_item_into_device_clipboard_cd)
@@ -388,36 +390,35 @@ private fun CopyToDeviceClipboardIcon(
     }
 }
 
-private enum class FavoriteIconAnimState { SteadyState, Transitioning }
-
 @Composable
 private fun FavoriteIcon(
     item: McbItem,
     onItemFavoriteToggle: (McbItem) -> Unit
 ) {
-    val transitionState by remember { mutableStateOf(MutableTransitionState(FavoriteIconAnimState.SteadyState)) }
-    val transition: Transition<FavoriteIconAnimState> = updateTransition(transitionState, label = "Favorite icon transition")
+    val transitionState by remember { mutableStateOf(MutableTransitionState(SingleStateWithTransitionAnimState.SteadyState)) }
+    val transition: Transition<SingleStateWithTransitionAnimState> =
+        updateTransition(transitionState, label = "Favorite icon transition")
     val scale by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 300, easing = LinearEasing) },
         label = "Favorite icon scale"
-    ) { targetState -> if (targetState == FavoriteIconAnimState.Transitioning) 3f else 1f }
+    ) { targetState -> if (targetState == SingleStateWithTransitionAnimState.Transitioning) 3f else 1f }
     val rotation by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 300, easing = LinearEasing) },
         label = "Favorite icon rotation"
     ) { targetState ->
         when (targetState) {
-            FavoriteIconAnimState.SteadyState -> 0f
-            FavoriteIconAnimState.Transitioning -> -360f
+            SingleStateWithTransitionAnimState.SteadyState -> 0f
+            SingleStateWithTransitionAnimState.Transitioning -> -360f
         }
     }
-    if (transitionState.currentState == FavoriteIconAnimState.Transitioning) {
-        transitionState.targetState = FavoriteIconAnimState.SteadyState
+    if (transitionState.currentState == SingleStateWithTransitionAnimState.Transitioning) {
+        transitionState.targetState = SingleStateWithTransitionAnimState.SteadyState
     }
     val favoriteCd = if (item.favorite) R.string.remove_from_favorites else R.string.add_to_favorites
     IconButton(
         onClick = {
             onItemFavoriteToggle(item)
-            transitionState.targetState = FavoriteIconAnimState.Transitioning
+            transitionState.targetState = SingleStateWithTransitionAnimState.Transitioning
         }
     ) {
         Icon(

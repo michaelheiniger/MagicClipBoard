@@ -1,5 +1,10 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -32,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
@@ -54,6 +60,7 @@ import ch.qscqlmpa.magicclipboard.ui.Destination
 import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import ch.qscqlmpa.magicclipboard.ui.common.YesNoDialog
+import ch.qscqlmpa.magicclipboard.ui.components.SingleStateWithTransitionAnimState
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.BottomNavItem
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardBottomBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardItemList
@@ -257,14 +264,35 @@ fun DeviceClipboardValue(
                 maxLines = if (textExpanded) Int.MAX_VALUE else 2
             )
         }
-        IconButton(
-            onClick = { onPasteValueToMcb(deviceClipboardValue) }
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_baseline_content_paste_24),
-                tint = MaterialTheme.colors.onSecondary,
-                contentDescription = stringResource(R.string.paste_value_from_device_clipboard_cd)
-            )
+        PasteDeviceClipboardValueToMcbIcon(onPasteValueToMcb, deviceClipboardValue)
+    }
+}
+
+@Composable
+private fun PasteDeviceClipboardValueToMcbIcon(
+    onPasteValueToMcb: (String) -> Unit,
+    deviceClipboardValue: String
+) {
+    val transitionState by remember { mutableStateOf(MutableTransitionState(SingleStateWithTransitionAnimState.SteadyState)) }
+    val transition = updateTransition(transitionState, label = "Copy from device clipboard to mcb icon transition")
+    val scale by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 200, easing = LinearEasing) },
+        label = "Copy from device clipboard to mcb icon scale"
+    ) { targetState -> if (targetState == SingleStateWithTransitionAnimState.Transitioning) 2f else 1f }
+    if (transitionState.currentState == SingleStateWithTransitionAnimState.Transitioning) {
+        transitionState.targetState = SingleStateWithTransitionAnimState.SteadyState
+    }
+    IconButton(
+        onClick = {
+            onPasteValueToMcb(deviceClipboardValue)
+            transitionState.targetState = SingleStateWithTransitionAnimState.Transitioning
         }
+    ) {
+        Icon(
+            modifier = Modifier.scale(scale),
+            painter = painterResource(R.drawable.ic_baseline_content_paste_24),
+            tint = MaterialTheme.colors.onSecondary,
+            contentDescription = stringResource(R.string.paste_value_from_device_clipboard_cd)
+        )
     }
 }
