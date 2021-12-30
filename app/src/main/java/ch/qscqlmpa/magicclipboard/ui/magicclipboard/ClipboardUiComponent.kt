@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -48,6 +49,7 @@ import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
+import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import java.time.LocalDateTime
 
 @Composable
@@ -62,7 +64,7 @@ fun NoClipboardItems(
         Column(modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
             Text(
                 text = stringResource(text),
-                color = MaterialTheme.colors.onPrimary,
+                color = MaterialTheme.colors.onSurface,
             )
         }
     }
@@ -211,6 +213,25 @@ fun clipboardItemRootTag(item: McbItem) = clipboardItemRootTag(item.id)
 fun clipboardItemCreationDateTag(item: McbItem) = clipboardItemCreationDateTag(item.id)
 fun clipboardItemValueTag(item: McbItem) = clipboardItemValueTag(item.id)
 
+@Preview(showBackground = true)
+@Composable
+fun ClipboardItemContentPreview() {
+    MagicClipBoardTheme {
+        ClipboardItemContent(
+            item = McbItem(
+                value = """
+                En avant! Ne craignez aucune obscurité! Debout! Debout cavaliers de Theoden! Les lances seront secouées, les boucliers voleront en éclats, une journée de l'épée, une journée rouge avant que le soleil ne se lève!
+                Au galop! Au galop! Courez à la ruine et à la fin du monde! A mort!
+                """.trimIndent()
+            ),
+            currentDateTime = LocalDateTime.now(),
+            sliding = false,
+            onItemFavoriteToggle = {},
+            onPasteItemToDeviceClipboard = {},
+        )
+    }
+}
+
 @Composable
 private fun ClipboardItemContent(
     item: McbItem,
@@ -220,8 +241,6 @@ private fun ClipboardItemContent(
     onPasteItemToDeviceClipboard: (McbItem) -> Unit
 ) {
     val itemCd = stringResource(R.string.clipboard_item_cd, item.value) // Can't inline: composable
-    val context = LocalContext.current
-    var showQrCodeModal by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -229,26 +248,71 @@ private fun ClipboardItemContent(
             .semantics { contentDescription = itemCd },
         elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value
     ) {
-        var expanded by remember { mutableStateOf(false) }
+        var textExpanded by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(8.dp)
+                .fillMaxSize()
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        modifier = Modifier.testTag(clipboardItemCreationDateTag(item)),
-                        text = formatClipBoardDate(item.creationDate, currentDateTime),
-                        color = MaterialTheme.colors.onSurface,
-                        fontSize = 10.sp
-                    )
+                Column(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            modifier = Modifier.testTag(clipboardItemCreationDateTag(item)),
+                            text = formatClipBoardDate(item.creationDate, currentDateTime),
+                            color = MaterialTheme.colors.onSurface,
+                            fontSize = 10.sp
+                        )
+                        IconButton(onClick = { textExpanded = !textExpanded }) {
+                            if (textExpanded) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_baseline_expand_less_24),
+                                    tint = MaterialTheme.colors.onSurface,
+                                    contentDescription = stringResource(R.string.shrink_back_expanded_text)
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_baseline_expand_more_24),
+                                    tint = MaterialTheme.colors.onSurface,
+                                    contentDescription = stringResource(R.string.expand_text)
+                                )
+                            }
+                        }
+                    }
+//                    TextAroundImageContent(
+//                        text = item.value,
+//                        color = MaterialTheme.colors.onSurface,
+//                        fontSize = 16.sp,
+//                        textAlign = TextAlign.Left,
+//                        alignContent = AlignContent.Right,
+//                        overflow = TextOverflow.Ellipsis,
+//                        maxLines = if (textExpanded) Int.MAX_VALUE else 35,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .testTag(clipboardItemValueTag(item))
+//                            .clickable { textExpanded = !textExpanded }
+//                            .animateContentSize(
+//                                animationSpec = spring(
+//                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+//                                    stiffness = Spring.StiffnessLow,
+//                                )
+//                            )
+//                    ) {
+//                        FavoriteIcon(item, onItemFavoriteToggle)
+//                    }
                     Text(
                         modifier = Modifier.testTag(clipboardItemValueTag(item))
-                            .clickable { expanded = !expanded }
+                            .clickable { textExpanded = !textExpanded }
                             .animateContentSize(
                                 animationSpec = spring(
                                     dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -258,10 +322,9 @@ private fun ClipboardItemContent(
                         text = item.value,
                         color = MaterialTheme.colors.onSurface,
                         overflow = TextOverflow.Ellipsis,
-                        maxLines = if (expanded) Int.MAX_VALUE else 3
+                        maxLines = if (textExpanded) Int.MAX_VALUE else 3
                     )
                 }
-                FavoriteIcon(item, onItemFavoriteToggle)
             }
             Divider(
                 color = Color.LightGray,
@@ -270,40 +333,50 @@ private fun ClipboardItemContent(
                     .fillMaxWidth()
                     .height(1.dp)
             )
+            var showQrCodeModal by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = { showQrCodeModal = true }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_baseline_qr_code_24),
-                        tint = MaterialTheme.colors.onSurface,
-                        contentDescription = stringResource(R.string.show_value_as_qr_code_cd)
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        val intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, item.value)
-                            type = "text/plain"
-                        }
-                        ContextCompat.startActivity(context, intent, null)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Share,
-                        tint = Color.Green,
-                        contentDescription = stringResource(R.string.share_clipboard_item_cd)
-                    )
-                }
+                FavoriteIcon(item, onItemFavoriteToggle)
+                QrCodeIcon(onClick = { showQrCodeModal = true })
+                ShareIcon(item)
                 CopyToDeviceClipboardIcon(item, onPasteItemToDeviceClipboard)
             }
+            if (showQrCodeModal) ShowQrCodeModal(item, onCloseClick = { showQrCodeModal = false })
         }
     }
+}
 
-    if (showQrCodeModal) {
-        ShowQrCodeModal(item, onCloseClick = { showQrCodeModal = false })
+@Composable
+private fun QrCodeIcon(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(R.drawable.ic_baseline_qr_code_24),
+            tint = MaterialTheme.colors.onSurface,
+            contentDescription = stringResource(R.string.show_value_as_qr_code_cd)
+        )
+    }
+}
+
+@Composable
+private fun ShareIcon(item: McbItem) {
+    val context = LocalContext.current
+    IconButton(
+        onClick = {
+            val intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, item.value)
+                type = "text/plain"
+            }
+            ContextCompat.startActivity(context, intent, null)
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Share,
+            tint = Color.Green,
+            contentDescription = stringResource(R.string.share_clipboard_item_cd)
+        )
     }
 }
 
