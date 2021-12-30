@@ -291,7 +291,7 @@ private fun ClipboardItemContent(
                         }
                     }
                     Text(
-                        modifier = Modifier.testTag(clipboardItemValueTag(item))
+                        modifier = Modifier.fillMaxWidth().testTag(clipboardItemValueTag(item))
                             .clickable { textExpanded = !textExpanded }
                             .animateContentSize(
                                 animationSpec = spring(
