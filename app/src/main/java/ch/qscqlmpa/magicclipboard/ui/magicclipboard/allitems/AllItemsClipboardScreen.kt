@@ -1,19 +1,21 @@
 package ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -74,7 +76,7 @@ private fun AllItemsClipboardBodyPreview() {
                 newItemsAdded = false,
                 messages = emptyList(),
                 deviceClipboardValue = "Here is an example of the value from device clipboard",
-                username = "Ned Stark",
+                username = "Sam Gamegie",
                 newClipboardValue = null
             ),
             currentRoute = Destination.Clipboard.routeName,
@@ -223,36 +225,44 @@ fun DeviceClipboardValue(
     deviceClipboardValue: String,
     onPasteValueToMcb: (String) -> Unit
 ) {
+    val scrollState = rememberScrollState()
+    var textExpanded by remember { mutableStateOf(false) }
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(5.dp))
             .background(color = MaterialTheme.colors.secondary)
             .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         val label = stringResource(R.string.valueInDeviceClipboard)
-        Text(
+        Row(
             modifier = Modifier
-                .testTag(UiTags.deviceClipboardValue)
-                .weight(1f),
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(label)
-                }
-                append(text = " $deviceClipboardValue")
-            },
-            color = Color.White,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 2
-        )
+                .verticalScroll(scrollState)
+                .weight(1f)
+                .clickable { textExpanded = !textExpanded }
+        ) {
+            Text(
+                modifier = Modifier
+                    .testTag(UiTags.deviceClipboardValue),
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(label)
+                    }
+                    append(text = " $deviceClipboardValue")
+                },
+                color = Color.White,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = if (textExpanded) Int.MAX_VALUE else 2
+            )
+        }
         IconButton(
-            modifier = Modifier.defaultMinSize(24.dp),
             onClick = { onPasteValueToMcb(deviceClipboardValue) }
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_baseline_content_paste_24),
-                tint = Color.White,
+                tint = MaterialTheme.colors.onSecondary,
                 contentDescription = stringResource(R.string.paste_value_from_device_clipboard_cd)
             )
         }
