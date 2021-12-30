@@ -289,27 +289,6 @@ private fun ClipboardItemContent(
                             }
                         }
                     }
-//                    TextAroundImageContent(
-//                        text = item.value,
-//                        color = MaterialTheme.colors.onSurface,
-//                        fontSize = 16.sp,
-//                        textAlign = TextAlign.Left,
-//                        alignContent = AlignContent.Right,
-//                        overflow = TextOverflow.Ellipsis,
-//                        maxLines = if (textExpanded) Int.MAX_VALUE else 35,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .testTag(clipboardItemValueTag(item))
-//                            .clickable { textExpanded = !textExpanded }
-//                            .animateContentSize(
-//                                animationSpec = spring(
-//                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-//                                    stiffness = Spring.StiffnessLow,
-//                                )
-//                            )
-//                    ) {
-//                        FavoriteIcon(item, onItemFavoriteToggle)
-//                    }
                     Text(
                         modifier = Modifier.testTag(clipboardItemValueTag(item))
                             .clickable { textExpanded = !textExpanded }
