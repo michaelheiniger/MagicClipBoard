@@ -10,12 +10,12 @@ class TestIdlingResource(resourceName: String) : McbIdlingResource {
     override fun isIdleNow() = resource.isIdleNow
 
     override fun increment(reason: String) {
-        Logger.debug("Increment counter: $reason")
+        Logger.debug { "Increment counter: $reason" }
         resource.increment()
     }
 
     override fun decrement(reason: String) {
-        Logger.debug("Decrement counter: $reason")
+        Logger.debug { "Decrement counter: $reason" }
         resource.decrement()
     }
 }
