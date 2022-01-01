@@ -49,7 +49,7 @@ import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
-import ch.qscqlmpa.magicclipboard.ui.components.SingleStateWithTransitionAnimState
+import ch.qscqlmpa.magicclipboard.ui.components.animations.SingleStateWithTransitionAnimState
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import java.time.LocalDateTime
 

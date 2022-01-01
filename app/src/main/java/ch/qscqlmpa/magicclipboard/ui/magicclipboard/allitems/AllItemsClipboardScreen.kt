@@ -60,7 +60,7 @@ import ch.qscqlmpa.magicclipboard.ui.Destination
 import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import ch.qscqlmpa.magicclipboard.ui.common.YesNoDialog
-import ch.qscqlmpa.magicclipboard.ui.components.SingleStateWithTransitionAnimState
+import ch.qscqlmpa.magicclipboard.ui.components.animations.SingleStateWithTransitionAnimState
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.BottomNavItem
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardBottomBar
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ClipboardItemList
