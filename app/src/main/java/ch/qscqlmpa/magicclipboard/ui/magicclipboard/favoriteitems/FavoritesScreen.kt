@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
+import ch.qscqlmpa.magicclipboard.data.remote.ConnectionStatus
 import ch.qscqlmpa.magicclipboard.debugClipBoardItems
 import ch.qscqlmpa.magicclipboard.ui.Destination
 import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
@@ -32,6 +33,7 @@ import ch.qscqlmpa.magicclipboard.ui.magicclipboard.ItemMessage
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.MagicClipboardUiState
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.NoClipboardItems
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.SignedInTopBar
+import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.ConnectionStatusBanner
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.DeviceClipboardValue
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import java.time.LocalDateTime
@@ -48,6 +50,7 @@ private fun FavoritesBodyPreview() {
                 messages = emptyList(),
                 deviceClipboardValue = "Here is an example of the value from device clipboard",
                 username = "Ned Stark",
+                connectionStatus = ConnectionStatus.Connected,
                 newClipboardValue = null
             ),
             currentRoute = Destination.Clipboard.routeName,
@@ -117,6 +120,10 @@ fun FavoritesBody(
                 .padding(innerPadding)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
+            if (uiState.connectionStatus == ConnectionStatus.Disconnected) {
+                ConnectionStatusBanner()
+                Spacer(Modifier.height(8.dp))
+            }
             if (uiState.deviceClipboardValue != null) {
                 DeviceClipboardValue(
                     deviceClipboardValue = uiState.deviceClipboardValue,

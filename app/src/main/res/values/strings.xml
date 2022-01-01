@@ -45,4 +45,5 @@
     <string name="toggle_dark_theme">Toggle dark theme</string>
     <string name="shrink_back_expanded_text">Shrink text</string>
     <string name="expand_text">Expand text</string>
+    <string name="disconnected_from_store">Disconnected</string>
 </resources>

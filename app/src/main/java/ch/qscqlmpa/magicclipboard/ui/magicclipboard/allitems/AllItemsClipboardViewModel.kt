@@ -2,8 +2,8 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems
 
 import androidx.lifecycle.viewModelScope
 import ch.qscqlmpa.magicclipboard.auth.SessionManager
+import ch.qscqlmpa.magicclipboard.clipboard.Items
 import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
-import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClipboardItemUsecase
@@ -43,7 +43,7 @@ class AllItemsClipboardViewModel(
         }
     }
 
-    override fun observeItems(): Flow<List<McbItem>> {
+    override fun observeItems(): Flow<Items> {
         return magicClipboardRepository.observeItems()
     }
 }

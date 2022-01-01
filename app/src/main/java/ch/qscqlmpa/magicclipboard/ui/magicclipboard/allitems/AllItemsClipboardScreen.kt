@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -52,9 +54,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
+import ch.qscqlmpa.magicclipboard.data.remote.ConnectionStatus
 import ch.qscqlmpa.magicclipboard.debugClipBoardItems
 import ch.qscqlmpa.magicclipboard.ui.Destination
 import ch.qscqlmpa.magicclipboard.ui.common.DefaultSnackbar
@@ -84,6 +88,7 @@ private fun AllItemsClipboardBodyPreview() {
                 messages = emptyList(),
                 deviceClipboardValue = "Here is an example of the value from device clipboard",
                 username = "Sam Gamegie",
+                connectionStatus = ConnectionStatus.Connected,
                 newClipboardValue = null
             ),
             currentRoute = Destination.Clipboard.routeName,
@@ -176,6 +181,10 @@ fun AllItemsClipboardBody(
                     .fillMaxSize()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
+                if (uiState.connectionStatus == ConnectionStatus.Disconnected) {
+                    ConnectionStatusBanner()
+                    Spacer(Modifier.height(8.dp))
+                }
                 if (uiState.deviceClipboardValue != null) {
                     DeviceClipboardValue(
                         deviceClipboardValue = uiState.deviceClipboardValue,
@@ -224,6 +233,29 @@ fun AllItemsClipboardBody(
         onDeleteItem = onDeleteItem,
         onMessageDismissState = onMessageDismissState
     )
+}
+
+@Composable
+fun ConnectionStatusBanner() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(5.dp))
+            .background(Color.Red)
+            .padding(8.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_baseline_offline_bolt_24),
+            tint = Color.White,
+            contentDescription = stringResource(R.string.delete_item_cd),
+        )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Text(
+            text = stringResource(R.string.disconnected_from_store),
+            color = Color.White,
+            fontSize = 20.sp,
+        )
+    }
 }
 
 @Composable

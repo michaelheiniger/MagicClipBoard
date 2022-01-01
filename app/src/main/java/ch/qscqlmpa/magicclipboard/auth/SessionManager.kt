@@ -27,7 +27,6 @@ class SessionManager(
 
     init {
         if (useFirebaseEmulator) auth.useEmulator("192.168.0.173", 9099)
-//        if (useFirebaseEmulator) auth.useEmulator("10.0.2.2", 9099)
     }
 
     override val userId: UserId?

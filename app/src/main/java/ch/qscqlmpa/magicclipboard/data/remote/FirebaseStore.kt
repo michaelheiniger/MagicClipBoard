@@ -57,13 +57,13 @@ class FirebaseStore(
         val clipboardItemsTypeIndicator =
             object : GenericTypeIndicator<Map<String, McbItemDto>>() {} // ktlint-disable max-line-length
         return callbackFlow<List<McbItem>> {
-            val callback = object : ValueEventListener { // Implementation of some callback interface
+            val callback = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Logger.debug { "Clipboard items changed: $snapshot" }
                     val itemsMap = snapshot.getValue(clipboardItemsTypeIndicator) ?: emptyMap()
                     trySend(itemsMap.values.map(McbItemDto::toMcbItem).sortedByDescending { i -> i.creationDate })
                         .onFailure { throwable ->
-                            // Downstream has been cancelled or failed, can log here
+                            // Downstream has been cancelled or failed
                             val msg = "Error while observing clipboard items from remote database."
                             if (throwable == null) Logger.error { msg }
                             else Logger.error(throwable) { msg }
@@ -76,6 +76,31 @@ class FirebaseStore(
             }
             clipboardItemsReference.addValueEventListener(callback)
             awaitClose { clipboardItemsReference.removeEventListener(callback) }
+        }.buffer(Channel.CONFLATED)
+    }
+
+    override fun connectionStatus(): Flow<ConnectionStatus> {
+        val connectedRef = db.getReference(".info/connected")
+        return callbackFlow<ConnectionStatus> {
+            val callback = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Logger.debug { "Connection status changed: $snapshot" }
+                    val connected = snapshot.getValue(Boolean::class.java) ?: false
+                    trySend(if (connected) ConnectionStatus.Connected else ConnectionStatus.Disconnected)
+                        .onFailure { throwable ->
+                            // Downstream has been cancelled or failed
+                            val msg = "Error while observing connection status."
+                            if (throwable == null) Logger.error { msg }
+                            else Logger.error(throwable) { msg }
+                        }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    channel.close()
+                }
+            }
+            connectedRef.addValueEventListener(callback)
+            awaitClose { connectedRef.removeEventListener(callback) }
         }.buffer(Channel.CONFLATED)
     }
 
@@ -93,6 +118,8 @@ class FirebaseStore(
         }
     }
 }
+
+enum class ConnectionStatus { Connected, Disconnected }
 
 private class McbItemDto {
     var id: String? = null

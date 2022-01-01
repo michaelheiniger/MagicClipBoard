@@ -10,4 +10,5 @@ interface Store {
     suspend fun deleteItem(id: McbItemId)
     suspend fun clearStore()
     fun observeClipboardItems(): Flow<List<McbItem>>
+    fun connectionStatus(): Flow<ConnectionStatus>
 }
