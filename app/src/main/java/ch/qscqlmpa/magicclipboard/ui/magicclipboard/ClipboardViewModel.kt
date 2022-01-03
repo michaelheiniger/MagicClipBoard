@@ -225,8 +225,20 @@ data class MagicClipboardViewModelState(
             items = currentItemsState,
             newItemsAdded = currentItemsState.size > previousItemsState.size,
             messages = messages,
-            deviceClipboardValue = deviceClipboardValue,
+            deviceClipboardValue = filterEmptyString(deviceClipboardValue),
             username = username,
             newClipboardValue = newClipboardValue
         )
+
+    companion object {
+
+        private val onlyBlanksStringRegex = Regex("^\\s$")
+
+        private fun filterEmptyString(input: String?): String? {
+            return if (input != null) {
+                if (input.matches(onlyBlanksStringRegex)) null
+                else input
+            } else null
+        }
+    }
 }
