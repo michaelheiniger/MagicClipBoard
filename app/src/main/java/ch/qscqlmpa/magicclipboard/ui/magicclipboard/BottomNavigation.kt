@@ -3,6 +3,7 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -30,7 +31,7 @@ fun ClipboardBottomBar(
             BottomNavigationItem(
                 icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
                 label = { Text(text = item.title, fontSize = 9.sp) },
-                selectedContentColor = Color.White,
+                selectedContentColor = MaterialTheme.colors.secondary,
                 unselectedContentColor = Color.White,
                 alwaysShowLabel = true,
                 selected = currentRoute == item.screenRoute,
