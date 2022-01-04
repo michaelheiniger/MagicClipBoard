@@ -137,6 +137,7 @@ dependencies {
     implementation("org.tinylog:tinylog-api-kotlin:2.4.1")
     implementation("org.tinylog:tinylog-impl:2.4.1")
     implementation(platform("com.google.firebase:firebase-bom:29.0.0")) // Firebase platform BoM
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Required to use androidx.arch.core.executor.testing.InstantTaskExecutorRule in ViewModel unit tests
     testImplementation("android.arch.core:core-testing:1.1.1")

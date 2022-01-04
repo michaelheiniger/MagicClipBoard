@@ -3,10 +3,9 @@ package ch.qscqlmpa.magicclipboard
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import ch.qscqlmpa.magicclipboard.data.UserPreferences
 import ch.qscqlmpa.magicclipboard.ui.MagicClipboard
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 import org.koin.android.ext.android.get
@@ -17,12 +16,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            var darkTheme by remember { mutableStateOf(false) }
-            MagicClipBoardTheme(darkTheme = darkTheme) {
+            val userPreferences = application.get<UserPreferences>()
+            val coroutineScope = rememberCoroutineScope()
+            MagicClipBoardTheme(darkTheme = userPreferences.darkThemeEnabled().collectAsState(false).value) {
                 MagicClipboard(
                     lifecycleOwner = this,
                     screenNavigator = application.get(),
-                    onToggleDarkTheme = { darkTheme = !darkTheme }
+                    onToggleDarkTheme = { coroutineScope.launch { userPreferences.toggleDarkTheme() } }
                 )
             }
         }

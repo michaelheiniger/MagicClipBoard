@@ -7,6 +7,7 @@ import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeviceClipboardUsecases
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.NewClipboardItemUsecase
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.ToggleFavoriteItemUsecase
+import ch.qscqlmpa.magicclipboard.data.UserPreferences
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
 import ch.qscqlmpa.magicclipboard.idlingresource.StubIdlingResource
 import ch.qscqlmpa.magicclipboard.ui.ScreenNavigator
@@ -24,6 +25,7 @@ val ioDispatcherName = named("io")
 val appModule = module {
     single(qualifier = ioDispatcherName) { Dispatchers.IO }
     single { androidContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager }
+    single { UserPreferences(androidContext()) }
 }
 
 val idlingResourceModule = module {
