@@ -3,16 +3,7 @@ package ch.qscqlmpa.magicclipboard.ui.magicclipboard
 import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -131,12 +123,11 @@ private fun ClipboardItem(
         dismissThresholds = { direction ->
             FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
         },
-
         background = {
             val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-            val color by animateColorAsState(
+            val backgroundColor by animateColorAsState(
                 when (dismissState.targetValue) {
-                    DismissValue.Default -> Color.LightGray
+                    DismissValue.Default -> MaterialTheme.colors.background
                     DismissValue.DismissedToEnd -> Color.Green
                     DismissValue.DismissedToStart -> Color.Red
                 }
@@ -157,25 +148,18 @@ private fun ClipboardItem(
                 DismissDirection.StartToEnd -> Color.Red
                 DismissDirection.EndToStart -> Color.White
             }
-            val scale by animateFloatAsState(
-                if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-            )
+            val scale by animateFloatAsState(if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
 
             Row(
                 horizontalArrangement = arrangement,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color)
+                    .background(backgroundColor)
                     .padding(horizontal = 20.dp)
             ) {
                 if (direction == DismissDirection.EndToStart) {
-                    Text(
-                        text = stringResource(text),
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        modifier = Modifier.scale(scale)
-                    )
+                    SwipeToDismissBackgroundText(text, scale)
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 }
                 Icon(
@@ -186,12 +170,7 @@ private fun ClipboardItem(
                 )
                 if (direction == DismissDirection.StartToEnd) {
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(
-                        text = stringResource(text),
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        modifier = Modifier.scale(scale)
-                    )
+                    SwipeToDismissBackgroundText(text, scale)
                 }
             }
         },
@@ -204,6 +183,16 @@ private fun ClipboardItem(
                 onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
             )
         }
+    )
+}
+
+@Composable
+private fun SwipeToDismissBackgroundText(text: Int, scale: Float) {
+    Text(
+        text = stringResource(text),
+        color = Color.White,
+        fontSize = 20.sp,
+        modifier = Modifier.scale(scale)
     )
 }
 
@@ -247,7 +236,8 @@ private fun ClipboardItemContent(
             .fillMaxWidth()
             .testTag(clipboardItemRootTag(item))
             .semantics { contentDescription = itemCd },
-        elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value
+        elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value,
+        shape = RoundedCornerShape(16.dp),
     ) {
         var textExpanded by remember { mutableStateOf(false) }
         Column(
