@@ -12,8 +12,8 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:2.8.1")
-        classpath("com.google.gms:google-services:4.3.10")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.1")
+        classpath("com.google.gms:google-services:4.3.13")
         classpath("de.mannodermaus.gradle.plugins:android-junit5:${Versions.androidJUnit5Plugin}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
     }
@@ -30,17 +30,17 @@ allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions {
             freeCompilerArgs = listOf(
-                "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
-                "-Xuse-experimental=androidx.compose.ExperimentalComposeApi",
-                "-Xuse-experimental=androidx.compose.foundation.ExperimentalFoundationApi",
-                "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
-                "-Xuse-experimental=androidx.compose.runtime.ExperimentalComposeApi",
-                "-Xuse-experimental=androidx.compose.ui.ExperimentalComposeUiApi",
-                "-Xuse-experimental=androidx.compose.ui.test.ExperimentalTestApi",
-                "-Xuse-experimental=coil.annotation.ExperimentalCoilApi",
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xuse-experimental=kotlinx.coroutines.InternalCoroutinesApi",
+                "-Xopt-in=androidx.compose.animation.ExperimentalAnimationApi",
+                "-Xopt-in=androidx.compose.ExperimentalComposeApi",
+                "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
+                "-Xopt-in=androidx.compose.runtime.ExperimentalComposeApi",
+                "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+                "-Xopt-in=androidx.compose.ui.test.ExperimentalTestApi",
+                "-Xopt-in=coil.annotation.ExperimentalCoilApi",
+                "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
+                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xopt-in=kotlinx.coroutines.InternalCoroutinesApi",
             )
         }
     }
@@ -62,19 +62,4 @@ ktlint {
 detekt {
     toolVersion = Versions.detekt
     config = files("config/detekt/detekt.yml")
-
-    reports {
-        xml {
-            enabled = true
-            destination = file("reports/detekt-report.xml")
-        }
-        html {
-            enabled = true
-            destination = file("reports/detekt-report.html")
-        }
-        txt {
-            enabled = true
-            destination = file("reports/detekt-report.txt")
-        }
-    }
 }
