@@ -16,17 +16,42 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.Divider
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SwipeToDismiss
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.runtime.*
+import androidx.compose.material.rememberDismissState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -131,12 +156,11 @@ private fun ClipboardItem(
         dismissThresholds = { direction ->
             FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
         },
-
         background = {
             val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-            val color by animateColorAsState(
+            val backgroundColor by animateColorAsState(
                 when (dismissState.targetValue) {
-                    DismissValue.Default -> Color.LightGray
+                    DismissValue.Default -> MaterialTheme.colors.background
                     DismissValue.DismissedToEnd -> Color.Green
                     DismissValue.DismissedToStart -> Color.Red
                 }
@@ -157,25 +181,18 @@ private fun ClipboardItem(
                 DismissDirection.StartToEnd -> Color.Red
                 DismissDirection.EndToStart -> Color.White
             }
-            val scale by animateFloatAsState(
-                if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-            )
+            val scale by animateFloatAsState(if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
 
             Row(
                 horizontalArrangement = arrangement,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color)
+                    .background(backgroundColor)
                     .padding(horizontal = 20.dp)
             ) {
                 if (direction == DismissDirection.EndToStart) {
-                    Text(
-                        text = stringResource(text),
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        modifier = Modifier.scale(scale)
-                    )
+                    SwipeToDismissBackgroundText(text, scale)
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 }
                 Icon(
@@ -186,12 +203,7 @@ private fun ClipboardItem(
                 )
                 if (direction == DismissDirection.StartToEnd) {
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(
-                        text = stringResource(text),
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        modifier = Modifier.scale(scale)
-                    )
+                    SwipeToDismissBackgroundText(text, scale)
                 }
             }
         },
@@ -204,6 +216,16 @@ private fun ClipboardItem(
                 onPasteItemToDeviceClipboard = onPasteItemToDeviceClipboard
             )
         }
+    )
+}
+
+@Composable
+private fun SwipeToDismissBackgroundText(text: Int, scale: Float) {
+    Text(
+        text = stringResource(text),
+        color = Color.White,
+        fontSize = 20.sp,
+        modifier = Modifier.scale(scale)
     )
 }
 
@@ -222,7 +244,7 @@ fun ClipboardItemContentPreview() {
             item = McbItem(
                 value = """
                 En avant! Ne craignez aucune obscurité! Debout! Debout cavaliers de Theoden! Les lances seront secouées, les boucliers voleront en éclats, une journée de l'épée, une journée rouge avant que le soleil ne se lève!
-                Au galop! Au galop! Courez à la ruine et à la fin du monde! A mort!
+                Au galop! Au galop! Courrez à la ruine et à la fin du monde! A mort!
                 """.trimIndent()
             ),
             currentDateTime = LocalDateTime.now(),
