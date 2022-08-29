@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.DismissDirection
@@ -269,7 +270,8 @@ private fun ClipboardItemContent(
             .fillMaxWidth()
             .testTag(clipboardItemRootTag(item))
             .semantics { contentDescription = itemCd },
-        elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value
+        elevation = animateDpAsState(if (sliding) 8.dp else 4.dp).value,
+        shape = RoundedCornerShape(16.dp),
     ) {
         var textExpanded by remember { mutableStateOf(false) }
         Column(
