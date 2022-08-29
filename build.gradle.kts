@@ -59,6 +59,7 @@ ktlint {
     verbose.set(false)
 }
 
+// Config for Detekt Gradle plugin
 detekt {
     toolVersion = Versions.detekt
     config = files("config/detekt/detekt.yml")

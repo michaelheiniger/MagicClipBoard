@@ -6,7 +6,7 @@ root = true
 # Note that rules in any ruleset other than the standard ruleset will need to be prefixed
 # by the ruleset identifier.
 #Note from Michael Heiniger: the rule "import-ordering" is disabled because it conflicts with the one from Android Studio.
-disabled_rules = no-wildcard-imports, import-ordering
+disabled_rules = no-wildcard-imports, import-ordering, trailing-comma
 max_line_length = 130
 
 
