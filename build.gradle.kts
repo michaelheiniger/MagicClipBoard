@@ -40,7 +40,7 @@ allprojects {
                 "-Xopt-in=coil.annotation.ExperimentalCoilApi",
                 "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
                 "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xopt-in=kotlinx.coroutines.InternalCoroutinesApi",
+                "-Xopt-in=kotlinx.coroutines.InternalCoroutinesApi"
             )
         }
     }
