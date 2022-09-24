@@ -30,17 +30,14 @@ allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions {
             freeCompilerArgs = listOf(
-                "-Xopt-in=androidx.compose.animation.ExperimentalAnimationApi",
-                "-Xopt-in=androidx.compose.ExperimentalComposeApi",
-                "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-                "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
-                "-Xopt-in=androidx.compose.runtime.ExperimentalComposeApi",
-                "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-                "-Xopt-in=androidx.compose.ui.test.ExperimentalTestApi",
-                "-Xopt-in=coil.annotation.ExperimentalCoilApi",
-                "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xopt-in=kotlinx.coroutines.InternalCoroutinesApi"
+                "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+                "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+                "-opt-in=androidx.compose.runtime.ExperimentalComposeApi",
+                "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+                "-opt-in=kotlin.ExperimentalUnsignedTypes",
+                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-opt-in=kotlinx.coroutines.InternalCoroutinesApi"
             )
         }
     }
