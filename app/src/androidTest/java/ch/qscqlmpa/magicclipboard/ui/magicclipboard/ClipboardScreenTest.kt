@@ -11,10 +11,10 @@ import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.clipBoardItems
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
+import ch.qscqlmpa.magicclipboard.data.remote.ConnectionStatus
 import ch.qscqlmpa.magicclipboard.item1
 import ch.qscqlmpa.magicclipboard.item2
 import ch.qscqlmpa.magicclipboard.item3
-import ch.qscqlmpa.magicclipboard.item4
 import ch.qscqlmpa.magicclipboard.item5
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import ch.qscqlmpa.magicclipboard.ui.magicclipboard.allitems.AllItemsClipboardBody
@@ -94,7 +94,6 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
                 bla bidi bla bla blaaaa didi dudu dada
             """.trimIndent()
         )
-        assertItemValue(item4.id, "[item 4]")
     }
 
     @Test
@@ -127,7 +126,7 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
     }
 
     private fun assertDeviceClipboardPanel() {
-        testRule.onNodeWithTag(UiTags.deviceClipboardValue)
+        testRule.onNodeWithTag(testTag = UiTags.deviceClipboardValue, useUnmergedTree = true)
             .assertTextContains("Winter is coming !", substring = true)
             .assertIsDisplayed()
     }
@@ -153,7 +152,8 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
                     messages = messages,
                     deviceClipboardValue = deviceClipboardValue,
                     username = username,
-                    newClipboardValue = null
+                    newClipboardValue = null,
+                    connectionStatus = ConnectionStatus.Connected
                 ),
                 currentRoute = null,
                 onBottomBarItemClick = {},
