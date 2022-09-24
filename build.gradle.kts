@@ -12,8 +12,8 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.1")
-        classpath("com.google.gms:google-services:4.3.13")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
+        classpath("com.google.gms:google-services:4.3.14")
         classpath("de.mannodermaus.gradle.plugins:android-junit5:${Versions.androidJUnit5Plugin}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
     }

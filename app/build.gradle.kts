@@ -117,22 +117,21 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.2.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.navigation:navigation-compose:2.5.1")
+    implementation("androidx.navigation:navigation-compose:2.5.2")
     implementation("com.firebaseui:firebase-ui-auth:8.0.0")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.26.2-beta")
-    implementation("com.google.android.gms:play-services-auth:20.2.0")
+    implementation("com.google.android.gms:play-services-auth:20.3.0")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-common-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-database-ktx") // Realtime Database library
     implementation("com.google.zxing:core:3.4.1")
-    // koin 3.2.0 seems incompatible with kotlin 1.7.10: java.lang.IllegalStateException: Compose Runtime internal error. Unexpected or incorrect use of the Compose internal runtime API (Start/end imbalance).
-    implementation("io.insert-koin:koin-android:3.1.6")
-    implementation("io.insert-koin:koin-androidx-compose:3.1.6")
+    implementation("io.insert-koin:koin-android:3.2.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
@@ -143,7 +142,7 @@ dependencies {
 
     // Required to use androidx.arch.core.executor.testing.InstantTaskExecutorRule in ViewModel unit tests
     testImplementation("android.arch.core:core-testing:1.1.1")
-    testImplementation("io.insert-koin:koin-test-junit5:3.1.6")
+    testImplementation("io.insert-koin:koin-test-junit5:3.2.0")
     testImplementation("io.mockk:mockk:1.12.1")
     testImplementation("org.assertj:assertj-core:3.21.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
@@ -156,7 +155,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
     androidTestImplementation("androidx.test:core-ktx:1.4.0")
-    androidTestImplementation("io.insert-koin:koin-test-junit4:3.1.6")
+    androidTestImplementation("io.insert-koin:koin-test-junit4:3.2.0")
     androidTestImplementation("org.assertj:assertj-core:3.21.0")
 }
 

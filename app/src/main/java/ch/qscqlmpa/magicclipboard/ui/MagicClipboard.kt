@@ -25,7 +25,7 @@ import ch.qscqlmpa.magicclipboard.ui.magicclipboard.favoriteitems.FavoritesScree
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInScreen
 import ch.qscqlmpa.magicclipboard.ui.signin.SignInViewModel
 import ch.qscqlmpa.magicclipboard.viewmodel.BaseViewModel
-import org.koin.androidx.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
@@ -56,7 +56,7 @@ fun MagicClipboard(
                 }
             )
         ) {
-            val viewModel by viewModel<SignInViewModel>()
+            val viewModel = koinViewModel<SignInViewModel>()
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
             SignInScreen(
                 viewModel = viewModel,
@@ -65,7 +65,7 @@ fun MagicClipboard(
         }
         composable(route = Destination.Clipboard.routeName) {
             val newClipboardValue = getNewClipboardValueFromDeepLink()
-            val viewModel by viewModel<AllItemsClipboardViewModel> { parametersOf(newClipboardValue) }
+            val viewModel = koinViewModel<AllItemsClipboardViewModel> { parametersOf(newClipboardValue) }
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
             AllItemsClipboardScreen(
                 viewModel = viewModel,
@@ -75,7 +75,7 @@ fun MagicClipboard(
             )
         }
         composable(route = Destination.FavoriteItems.routeName) {
-            val viewModel by viewModel<FavoriteItemsClipboardViewModel>()
+            val viewModel = koinViewModel<FavoriteItemsClipboardViewModel>()
             HookViewModelToLifecycle(viewModel, lifecycleOwner)
             FavoritesScreen(
                 viewModel = viewModel,
