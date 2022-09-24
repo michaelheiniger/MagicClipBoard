@@ -1,0 +1,28 @@
+{
+  "kind": "identitytoolkit#DownloadAccountResponse",
+  "users": [
+    {
+      "localId": "S5v1VBB6SHuXa90VRtczCYQsXsnY",
+      "createdAt": "1664050230737",
+      "lastLoginAt": "1664050230737",
+      "displayName": "Ned Stark",
+      "photoUrl": "",
+      "emailVerified": false,
+      "email": "ned.stark@headless.com",
+      "salt": "fakeSaltMbPzRH5qDDRCi7585pn7",
+      "passwordHash": "fakeHash:salt=fakeSaltMbPzRH5qDDRCi7585pn7:password=12345678",
+      "passwordUpdatedAt": 1664050230737,
+      "validSince": "1664050230",
+      "providerUserInfo": [
+        {
+          "providerId": "password",
+          "email": "ned.stark@headless.com",
+          "federatedId": "ned.stark@headless.com",
+          "rawId": "ned.stark@headless.com",
+          "displayName": "Ned Stark",
+          "photoUrl": ""
+        }
+      ]
+    }
+  ]
+}
