@@ -13,9 +13,9 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToKey
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import ch.qscqlmpa.magicclipboard.ui.common.UiTags
 import org.junit.Test
@@ -59,7 +59,7 @@ class MagicClipboardE2eTest : BaseE2eTest() {
         testRule.onNodeWithText("[item 1]").assertExists().assertIsDisplayed()
 
         testRule.onNodeWithTag("${UiTags.clipboardItem}_${idItem1.value}")
-            .performGesture { swipeLeft() }
+            .performTouchInput { swipeLeft() }
             .assertDoesNotExist() // Required to somehow complete the swipe...
 
         testRule.onNodeWithText("[item 1]").assertDoesNotExist()
