@@ -41,8 +41,6 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
     fun withoutItems() {
         // Given
         items = emptyList()
-        deviceClipboardValue = "Winter is coming !"
-        username = "Ned Stark"
 
         // When
         launchTest()
@@ -58,8 +56,6 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
     fun withItems() {
         // Given
         items = clipBoardItems
-        deviceClipboardValue = "Winter is coming !"
-        username = "Ned Stark"
 
         // When
         launchTest()
@@ -112,6 +108,19 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
         testRule.onNodeWithTag(UiTags.clipboardItemList).performScrollToIndex(4)
         assertItemDateTime(item5, "26.07.1989 19:55:00")
     }
+
+    //TODO: Enable and find a way to disconnect from store
+//    @Test
+//    fun bannerShownWhenDisconnectedFromStore() {
+//        // Given
+//        items = clipBoardItems
+//
+//        // When
+//        launchTest()
+//
+//        // Then
+//        testRule.onNodeWithText(getString(R.string.disconnected_from_store)).assertIsDisplayed()
+//    }
 
     private fun assertItemValue(itemId: McbItemId, expectedString: String) {
         testRule.onNodeWithTag(clipboardItemValueTag(itemId))
