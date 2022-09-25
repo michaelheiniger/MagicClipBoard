@@ -43,10 +43,6 @@ allprojects {
     }
 }
 
-dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
-}
-
 tasks.register<Delete>("clean") {
     delete(rootProject.buildDir)
 }
