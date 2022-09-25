@@ -101,6 +101,7 @@ android {
         // Among other things: launches the App for each test (prevents cross-tests dependencies)
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
+    namespace = "ch.qscqlmpa.magicclipboard"
 }
 
 dependencies {

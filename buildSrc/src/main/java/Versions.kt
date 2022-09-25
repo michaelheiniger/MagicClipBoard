@@ -9,7 +9,7 @@ object Versions {
     const val kotlin = "1.7.10"
 
     // Gradle plugins
-    const val androidGradlePlugin = "7.2.2"
+    const val androidGradlePlugin = "7.3.0"
     const val ktlintGradlePlugin = "10.1.0"
     const val detekt = "1.21.0"
     const val androidJUnit5Plugin = "1.7.1.1"
