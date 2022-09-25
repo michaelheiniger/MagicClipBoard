@@ -1,0 +1,44 @@
+name: Build all variants
+
+# Controls when the action will run.
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Decode Keystore file from secrets (base 64 encoded)
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileName: 'keystore.jks'
+          fileDir: 'app'
+          encodedString: ${{ secrets.KEYSTORE }}
+      - name: Decode google-services.json file from secrets (base 64 encoded)
+        id: decode_google_services_json
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileName: 'google-services.json'
+          fileDir: 'app'
+          encodedString: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      - name: Use JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - name: Build all variants
+        run: ./gradlew build
+        env:
+          SIGNING_KEYSTORE_PATH: 'keystore.jks'
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}

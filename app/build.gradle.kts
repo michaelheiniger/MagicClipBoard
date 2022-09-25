@@ -1,6 +1,11 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -13,9 +18,43 @@ android {
         versionCode = Versions.appVersionCode
         versionName = Versions.appVersionName
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "ch.qscqlmpa.magicclipboard.CustomTestRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    val keystoreProperties = Properties()
+    val keystorePropertiesFile = rootProject.file("key.properties")
+
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+            } else {
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                storeFile = file("keystore.jks")
+            }
+        }
+        getByName("debug") {
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+            } else {
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                storeFile = file("keystore.jks")
+            }
         }
     }
 
@@ -27,6 +66,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+        }
+        named("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -41,10 +84,11 @@ android {
 
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Versions.compose
+        kotlinCompilerExtensionVersion = "1.3.0"
     }
 
     // To prevent the error message (AndroidTest): " 2 files found with path 'META-INF/AL2.0' from inputs: ..."
@@ -52,26 +96,70 @@ android {
         resources.excludes.add("META-INF/AL2.0")
         resources.excludes.add("META-INF/LGPL2.1")
     }
+
+    testOptions {
+        // Among other things: launches the App for each test (prevents cross-tests dependencies)
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+    namespace = "ch.qscqlmpa.magicclipboard"
 }
 
 dependencies {
-    implementation(Libs.coreKtx)
-    implementation(Libs.composeUi)
-    implementation(Libs.composeUiToolingPreview)
-    implementation(Libs.composeMaterial)
-    implementation(Libs.lifecycleRuntimeKtx)
-    implementation(Libs.activityCompose)
+    debugImplementation("androidx.compose.ui:ui-tooling:1.2.1")
+    implementation("androidx.activity:activity-compose:1.5.1")
 
-    testImplementation(Libs.jUnit5Api)
-    testRuntimeOnly(Libs.jUnit5Engine)
-    testRuntimeOnly(Libs.jUnit5Vintage)
-    androidTestImplementation(Libs.testExtJUnit)
-    testImplementation(Libs.mockk)
-    testImplementation(Libs.assertJCore)
-    androidTestImplementation(Libs.assertJCore)
-    androidTestImplementation(Libs.testEspressoCore)
-    androidTestImplementation(Libs.composeUiTestJUnit4)
-    debugImplementation(Libs.composeUiTooling)
+    // Required despite what dependency-analysis (README) is saying
+    implementation("androidx.camera:camera-camera2:1.0.0-beta07")
+    implementation("androidx.camera:camera-lifecycle:1.0.0-beta07")
+    implementation("androidx.camera:camera-view:1.0.0-alpha14")
+
+    implementation("androidx.compose.material:material:1.2.1")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.2.1")
+    implementation("androidx.compose.ui:ui:1.2.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.navigation:navigation-compose:2.5.2")
+    implementation("com.firebaseui:firebase-ui-auth:8.0.0")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.26.2-beta")
+    implementation("com.google.android.gms:play-services-auth:20.3.0")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-common-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-database-ktx") // Realtime Database library
+    implementation("com.google.zxing:core:3.4.1")
+    implementation("io.insert-koin:koin-android:3.2.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+    implementation("org.tinylog:tinylog-api-kotlin:2.4.1")
+    implementation("org.tinylog:tinylog-impl:2.4.1")
+    implementation(platform("com.google.firebase:firebase-bom:29.0.0")) // Firebase platform BoM
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Required to use androidx.arch.core.executor.testing.InstantTaskExecutorRule in ViewModel unit tests
+    testImplementation("android.arch.core:core-testing:1.1.1")
+    testImplementation("io.insert-koin:koin-test-junit5:3.2.0")
+    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("org.assertj:assertj-core:3.21.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
+
+    // Espresso (needed for CounterIdlingResource)
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
+
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
+    androidTestImplementation("androidx.test:core-ktx:1.4.0")
+    androidTestImplementation("io.insert-koin:koin-test-junit4:3.2.0")
+    androidTestImplementation("org.assertj:assertj-core:3.21.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.2.1")
+    androidTestUtil("androidx.test:orchestrator:1.4.1")
 }
 
 // For jUnit5 tests

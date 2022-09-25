@@ -12,8 +12,10 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
+        classpath("com.google.gms:google-services:4.3.14")
         classpath("de.mannodermaus.gradle.plugins:android-junit5:${Versions.androidJUnit5Plugin}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
     }
 }
 
@@ -24,10 +26,21 @@ allprojects {
     }
     apply(plugin = ("org.jlleitschuh.gradle.ktlint"))
     apply(plugin = ("io.gitlab.arturbosch.detekt"))
-}
 
-dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            freeCompilerArgs = listOf(
+                "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+                "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+                "-opt-in=androidx.compose.runtime.ExperimentalComposeApi",
+                "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+                "-opt-in=kotlin.ExperimentalUnsignedTypes",
+                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-opt-in=kotlinx.coroutines.InternalCoroutinesApi"
+            )
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
@@ -35,26 +48,12 @@ tasks.register<Delete>("clean") {
 }
 
 ktlint {
-    debug.set(true)
-    verbose.set(true)
+    debug.set(false)
+    verbose.set(false)
 }
 
+// Config for Detekt Gradle plugin
 detekt {
     toolVersion = Versions.detekt
     config = files("config/detekt/detekt.yml")
-
-    reports {
-        xml {
-            enabled = true
-            destination = file("reports/detekt-report.xml")
-        }
-        html {
-            enabled = true
-            destination = file("reports/detekt-report.html")
-        }
-        txt {
-            enabled = true
-            destination = file("reports/detekt-report.txt")
-        }
-    }
 }
