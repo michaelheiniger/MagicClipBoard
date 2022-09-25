@@ -33,8 +33,6 @@ open class App : Application() {
                 idlingResourceModule,
                 prodSessionModule,
                 prodStoreModule,
-//                localSessionModule,
-//                localStoreModule,
                 usecasesModule,
                 repositoriesModule,
                 viewModelsModule,
