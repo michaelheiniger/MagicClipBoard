@@ -40,20 +40,6 @@ abstract class BaseE2eTest {
         testRule.unregisterIdlingResource(idlingResource)
     }
 
-    protected fun initStore() {
-        val store = app.get<Store>()
-        runBlocking {
-            clipBoardItems.forEach {
-                launch { store.addNewItem(it) }
-            }
-        }
-    }
-
-    protected fun clearStore() {
-        val store = app.get<Store>()
-        runBlocking { store.clearStore() }
-    }
-
     protected fun getString(resource: Int): String {
         return res.getString(resource)
     }
