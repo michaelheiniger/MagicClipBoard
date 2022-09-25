@@ -109,7 +109,7 @@ internal class ClipboardScreenTest : BaseUiUnitTest() {
         assertItemDateTime(item5, "26.07.1989 19:55:00")
     }
 
-    //TODO: Enable and find a way to disconnect from store
+    // TODO: Enable and find a way to disconnect from store
 //    @Test
 //    fun bannerShownWhenDisconnectedFromStore() {
 //        // Given
