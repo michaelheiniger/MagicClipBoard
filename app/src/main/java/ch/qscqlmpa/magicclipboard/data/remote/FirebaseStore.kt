@@ -36,9 +36,7 @@ class FirebaseStore(
     }
 
     override suspend fun updateItem(item: McbItem) {
-        withContext(ioDispatcher) {
-            clipboardItemsReference.child(item.id.value.toString()).setValue(toDto(item)).await()
-        }
+        addNewItem(item)
     }
 
     override suspend fun deleteItem(id: McbItemId) {
@@ -56,7 +54,7 @@ class FirebaseStore(
     override fun observeClipboardItems(): Flow<List<McbItem>> {
         val clipboardItemsTypeIndicator =
             object : GenericTypeIndicator<Map<String, McbItemDto>>() {} // ktlint-disable max-line-length
-        return callbackFlow<List<McbItem>> {
+        return callbackFlow {
             val callback = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Logger.debug { "Clipboard items changed: $snapshot" }
@@ -81,7 +79,7 @@ class FirebaseStore(
 
     override fun connectionStatus(): Flow<ConnectionStatus> {
         val connectedRef = db.getReference(".info/connected")
-        return callbackFlow<ConnectionStatus> {
+        return callbackFlow {
             val callback = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Logger.debug { "Connection status changed: $snapshot" }
