@@ -24,6 +24,7 @@ class FavoriteItemsClipboardViewModel(
     sessionManager: SessionManager,
     screenNavigator: ScreenNavigator,
 ) : ClipboardViewModel(
+    magicClipboardRepository,
     deviceClipboardUsecases,
     deleteClipboardItemUsecase,
     toggleFavoriteItemUsecase,

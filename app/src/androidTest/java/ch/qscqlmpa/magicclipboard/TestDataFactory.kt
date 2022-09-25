@@ -3,28 +3,28 @@ package ch.qscqlmpa.magicclipboard
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
-val idItem1 = McbItemId(UUID.fromString("9d0823b0-fbd4-4b05-a5fe-8d5060eef811"))
-val idItem2 = McbItemId(UUID.fromString("3d52bbc1-a5aa-4e71-b5fa-3c3b537a1943"))
-val idItem3 = McbItemId(UUID.fromString("838b3e00-5ffa-4aeb-973c-a31a59a1559e"))
-val idItem4 = McbItemId(UUID.fromString("f2502a9d-4759-44ae-922a-c45db6803993"))
-val idItem5 = McbItemId(UUID.fromString("858f97ff-4d3e-4512-848a-1bfcdad95bb0"))
-val idItem6 = McbItemId(UUID.fromString("f0f1871f-83f1-432d-a802-6617d182e6d6"))
-val idItem7 = McbItemId(UUID.fromString("d906c0c4-b476-4c8a-ac5b-2ef6c4c2ba60"))
-val idItem8 = McbItemId(UUID.fromString("c3b2e14f-e713-475c-9e3c-1ca4b482fc43"))
-val idItem9 = McbItemId(UUID.fromString("4c2cc3e2-4278-41c7-a515-f19db4534d2d"))
-val idItem10 = McbItemId(UUID.fromString("d4d72ee9-38bf-4c7b-a71f-a3b1a3a5f3f2"))
-val idItem11 = McbItemId(UUID.fromString("fda7ca12-b85e-475a-b846-f4752b61e80e"))
-val idItem12 = McbItemId(UUID.fromString("869c15c5-6185-4790-9d57-3217229ef5a7"))
-val idItem13 = McbItemId(UUID.fromString("c786e4e4-99f9-4009-ba0b-7753b47e33dc"))
-val idItem14 = McbItemId(UUID.fromString("47c9a1a9-96ae-4472-b1b3-222066aca318"))
-val idItem15 = McbItemId(UUID.fromString("a86ebfcf-94d7-4d36-9ce6-123dcfd2ef7a"))
-val idItem16 = McbItemId(UUID.fromString("0dd8b20d-b4fc-4c64-8250-87927fa2e133"))
-val idItem17 = McbItemId(UUID.fromString("2a1221e8-0a32-4f8e-9098-d000063bb8b7"))
-val idItem18 = McbItemId(UUID.fromString("3c1715a3-3e04-4ef5-86fc-25b80017a801"))
-val idItem19 = McbItemId(UUID.fromString("41fae70b-7c4d-49da-ac2f-179364f442f6"))
-val idItem20 = McbItemId(UUID.fromString("1bc0ffd7-7e8e-49cb-a0c8-cb32b8e8f43d"))
+val idItem1 = McbItemId(UUID.fromString("b96da1ee-2f09-4dcc-af07-530d6c5eb7e9"))
+val idItem2 = McbItemId(UUID.fromString("49d02886-7a63-4ac3-8eef-42986987dce4"))
+val idItem3 = McbItemId(UUID.fromString("6e507b74-ffed-48b9-bf10-fe7575653250"))
+val idItem4 = McbItemId(UUID.fromString("530991a0-80cf-447f-b89e-de78fc3283c1"))
+val idItem5 = McbItemId(UUID.fromString("00180cfb-8372-4342-ab9a-b0104f55cd0b"))
+val idItem6 = McbItemId(UUID.fromString("c0b93b2c-a570-4ba2-bd6d-51b56593a8ff"))
+val idItem7 = McbItemId(UUID.fromString("ccc1ec2c-e6cb-4896-b3c9-7fa018b553e8"))
+val idItem8 = McbItemId(UUID.fromString("9f34f75d-7391-4acb-a705-0e5f83244061"))
+val idItem9 = McbItemId(UUID.fromString("1b880f3f-bc2d-4ae2-ab20-25dc76f7f5ac"))
+val idItem10 = McbItemId(UUID.fromString("bd8f92e1-fa8a-4145-9e16-f2d9a3ada2ad"))
+val idItem11 = McbItemId(UUID.fromString("e6153811-81fb-4f87-9d6c-493609014a12"))
+val idItem12 = McbItemId(UUID.fromString("898340ab-bbf5-4ec3-a012-163c802cff49"))
+val idItem13 = McbItemId(UUID.fromString("8ddbf345-1aa6-40f1-9065-66832907a128"))
+val idItem14 = McbItemId(UUID.fromString("6d55560e-8603-4756-b27a-b14f4a3d401e"))
+val idItem15 = McbItemId(UUID.fromString("16db4c9d-7c2c-4531-836f-059a90e46f8f"))
+val idItem16 = McbItemId(UUID.fromString("7808a93a-2c14-4d26-a0e5-88864283092b"))
+val idItem17 = McbItemId(UUID.fromString("e414d91b-6a51-4925-9553-92336a3f8bf2"))
+val idItem18 = McbItemId(UUID.fromString("2ee17dac-3c1b-4028-8aaa-ea980e75d3af"))
+val idItem19 = McbItemId(UUID.fromString("3185ec97-aadf-4763-a408-7f4db2ce1a64"))
+val idItem20 = McbItemId(UUID.fromString("453b0081-9b7a-4028-b9b1-6ccd8dd34755"))
 
 val item1 = McbItem(
     id = idItem1,

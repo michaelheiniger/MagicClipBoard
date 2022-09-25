@@ -6,6 +6,7 @@ import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.auth.SessionManager
 import ch.qscqlmpa.magicclipboard.auth.SessionState
 import ch.qscqlmpa.magicclipboard.clipboard.Items
+import ch.qscqlmpa.magicclipboard.clipboard.MagicClipboardRepository
 import ch.qscqlmpa.magicclipboard.clipboard.McbItem
 import ch.qscqlmpa.magicclipboard.clipboard.McbItemId
 import ch.qscqlmpa.magicclipboard.clipboard.usecases.DeleteClipboardItemUsecase
@@ -23,7 +24,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -33,6 +33,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 abstract class ClipboardViewModel(
+    private val magicClipboardRepository: MagicClipboardRepository,
     private val deviceClipboardUsecases: DeviceClipboardUsecases,
     private val deleteClipboardItemUsecase: DeleteClipboardItemUsecase,
     private val toggleFavoriteItemUsecase: ToggleFavoriteItemUsecase,
@@ -42,6 +43,7 @@ abstract class ClipboardViewModel(
     newClipboardValue: String?
 ) : BaseViewModel() {
 
+    private lateinit var observeConnectionStatusJob: Job
     private lateinit var observeCliboardItemsJob: Job
     private lateinit var observeLoginJob: Job
     private lateinit var recompositionSchedulerJob: Job
@@ -143,6 +145,15 @@ abstract class ClipboardViewModel(
                 idlingResource.decrement("Item list updated")
             }
         }
+
+        observeConnectionStatusJob = viewModelScope.launch {
+            magicClipboardRepository.observeStoreConnectionStatus().collect { connectionStatus ->
+                viewModelState.update {
+                    it.copy(connectionStatus = connectionStatus)
+                }
+            }
+        }
+
         recompositionSchedulerJob = viewModelScope.launch {
             tickerFlow(1).collect { viewModelState.update { it.copy(currentDateTime = LocalDateTime.now()) } }
         }

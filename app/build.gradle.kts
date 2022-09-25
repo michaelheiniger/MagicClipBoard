@@ -153,10 +153,13 @@ dependencies {
 
     // Espresso (needed for CounterIdlingResource)
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
+
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
     androidTestImplementation("androidx.test:core-ktx:1.4.0")
     androidTestImplementation("io.insert-koin:koin-test-junit4:3.2.0")
     androidTestImplementation("org.assertj:assertj-core:3.21.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.2.1")
+    androidTestUtil("androidx.test:orchestrator:1.4.1")
 }
 
 // For jUnit5 tests

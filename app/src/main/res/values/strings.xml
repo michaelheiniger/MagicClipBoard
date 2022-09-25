@@ -13,7 +13,7 @@
     <string name="error_starting_camera">Camera error</string>
     <string name="item_deleted_succesfully">Item deleted</string>
     <string name="item_pasted_in_device_clipboard">Value pasted in device clipboard</string>
-    <string name="item_pasted_in_magic_clipbaord">Item pasted in MagicClipboard !</string>
+    <string name="item_pasted_in_magic_clipboard">Item pasted in MagicClipboard !</string>
     <string name="linkWithAccount">Link with existing account</string>
     <string name="load_clipboard_item_into_device_clipboard_cd">Load clipboard item into device clipboard</string>
     <string name="no">No</string>
@@ -30,7 +30,7 @@
     <string name="scan_qr_code_hint">Read value from QR code</string>
     <string name="share_clipboard_item_cd">Share item value</string>
     <string name="show_value_as_qr_code_cd">Show value as QR code</string>
-    <string name="signIn">Sign in</string>
+    <string name="signIn">Sign in with Google</string>
     <string name="signInFailed">Sign-in failed</string>
     <string name="signingIn">Signing in</string>
     <string name="signOut">Sign out</string>

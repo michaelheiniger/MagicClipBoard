@@ -21,13 +21,10 @@ sealed interface SessionState {
 value class UserId(val value: String)
 
 class SessionManager(
-    useFirebaseEmulator: Boolean
+    initialAuth: FirebaseAuth
 ) : SessionStateProvider {
-    private var auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    init {
-        if (useFirebaseEmulator) auth.useEmulator("192.168.0.173", 9099)
-    }
+    private var auth: FirebaseAuth = initialAuth
 
     override val userId: UserId?
         get() {
@@ -47,7 +44,6 @@ class SessionManager(
                     """
                 }
                 auth = newAuthState
-//                auth.useEmulator("192.168.0.173", 9000)
                 trySend(buildSessionState(newAuthState))
             }
             auth.addAuthStateListener(callback)

@@ -3,17 +3,30 @@ package ch.qscqlmpa.magicclipboard.ui.signin
 import android.app.Activity.RESULT_OK
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ch.qscqlmpa.magicclipboard.BuildConfig
 import ch.qscqlmpa.magicclipboard.R
 import ch.qscqlmpa.magicclipboard.launch
 import ch.qscqlmpa.magicclipboard.ui.common.InfoDialog
@@ -36,9 +49,14 @@ private fun SignInBodyPreview() {
         SignInBody(
             uiState = LoginUiState(
                 isLoading = false,
+                "ned.stark@headless.com",
+                "12345678"
             ),
             onToggleDarkTheme = {},
             onSignIn = {},
+            onEmailChange = {},
+            onPasswordChange = {},
+            onSignInWithEmailAndPassword = {}
         )
     }
 }
@@ -52,6 +70,9 @@ fun SignInScreen(
         uiState = viewModel.uiState.collectAsState().value,
         onToggleDarkTheme = onToggleDarkTheme,
         onSignIn = viewModel::onSignIn,
+        onEmailChange = viewModel::onEmailChange,
+        onPasswordChange = viewModel::onPasswordChange,
+        onSignInWithEmailAndPassword = viewModel::onSignInWithEmailAndPassword
     )
 }
 
@@ -59,7 +80,10 @@ fun SignInScreen(
 private fun SignInBody(
     uiState: LoginUiState,
     onToggleDarkTheme: () -> Unit,
-    onSignIn: (AuthCredential) -> Unit
+    onSignIn: (AuthCredential) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onSignInWithEmailAndPassword: () -> Unit,
 ) {
     Scaffold(topBar = { SignedOutTopBar(onToggleDarkTheme) }) { innerPadding ->
         Column(
@@ -96,7 +120,7 @@ private fun SignInBody(
                     }
                 val token = stringResource(R.string.default_web_client_id)
                 Button(
-                    modifier = Modifier.testTag(UiTags.loginAsIdentifiedUser),
+                    modifier = Modifier.testTag(UiTags.signInWithGoogle),
                     onClick = {
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestIdToken(token)
@@ -111,6 +135,31 @@ private fun SignInBody(
                         text = R.string.signInFailed,
                         onCloseClick = { showSignInFailedDialog = false }
                     )
+                }
+            }
+            if (BuildConfig.DEBUG) {
+                Row {
+                    TextField(
+                        modifier = Modifier.testTag(UiTags.emailInput),
+                        label = { Text(text = "E-mail") },
+                        value = uiState.email,
+                        onValueChange = onEmailChange
+                    )
+                }
+                Row {
+                    TextField(
+                        modifier = Modifier.testTag(UiTags.passwordInput),
+                        label = { Text(text = "Password") },
+                        value = uiState.password,
+                        visualTransformation = PasswordVisualTransformation(),
+                        onValueChange = onPasswordChange
+                    )
+                }
+                Button(
+                    modifier = Modifier.testTag(UiTags.signInWithEmailAndPassword),
+                    onClick = onSignInWithEmailAndPassword
+                ) {
+                    Text(text = "Sign-in with e-mail and password")
                 }
             }
         }

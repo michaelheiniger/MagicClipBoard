@@ -11,16 +11,26 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class SignInViewModel(
     private val sessionManager: SessionManager,
-    private val screenNavigator: ScreenNavigator,
+    private val screenNavigator: ScreenNavigator
 ) : BaseViewModel() {
 
-    private val viewModelState = MutableStateFlow(LoginViewModelState(isLoading = true))
+    private val viewModelState = MutableStateFlow(
+        LoginViewModelState(
+            isLoading = true,
+            email = "",
+            password = ""
+        )
+    )
 
     private lateinit var observeLoginJob: Job
 
@@ -35,6 +45,23 @@ class SignInViewModel(
     fun onSignIn(credential: AuthCredential) {
         viewModelScope.launch {
             Firebase.auth.signInWithCredential(credential).await()
+        }
+    }
+
+    fun onEmailChange(email: String) {
+        viewModelState.update { it.copy(email = email) }
+    }
+
+    fun onPasswordChange(password: String) {
+        viewModelState.update { it.copy(password = password) }
+    }
+
+    fun onSignInWithEmailAndPassword() {
+        viewModelScope.launch {
+            Firebase.auth.signInWithEmailAndPassword(
+                viewModelState.value.email,
+                viewModelState.value.password
+            ).await()
         }
     }
 
@@ -66,10 +93,18 @@ class SignInViewModel(
 
 data class LoginUiState(
     val isLoading: Boolean,
+    val email: String,
+    val password: String,
 )
 
 private data class LoginViewModelState(
     val isLoading: Boolean,
+    val email: String,
+    val password: String,
 ) {
-    fun toUiState(): LoginUiState = LoginUiState(isLoading = isLoading)
+    fun toUiState(): LoginUiState = LoginUiState(
+        isLoading = isLoading,
+        email = email,
+        password = password,
+    )
 }

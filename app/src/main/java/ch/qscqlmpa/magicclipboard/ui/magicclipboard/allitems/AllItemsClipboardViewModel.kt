@@ -26,6 +26,7 @@ class AllItemsClipboardViewModel(
     screenNavigator: ScreenNavigator,
     private val newClipboardValue: String?
 ) : ClipboardViewModel(
+    magicClipboardRepository,
     deviceClipboardUsecases,
     deleteClipboardItemUsecase,
     toggleFavoriteItemUsecase,

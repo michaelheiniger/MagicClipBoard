@@ -12,8 +12,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val prodSessionModule = module {
-    single { SessionManager(useFirebaseEmulator = false) }
-        .bind(SessionStateProvider::class)
+    single { SessionManager(get()) }.bind(SessionStateProvider::class)
 }
 
 val prodStoreModule = module {
