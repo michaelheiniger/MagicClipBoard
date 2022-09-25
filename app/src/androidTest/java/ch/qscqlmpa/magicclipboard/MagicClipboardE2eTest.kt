@@ -31,7 +31,7 @@ class MagicClipboardE2eTest : BaseE2eTest() {
     @Test
     fun itemsShouldBeDisplayed() {
         testRule.onNodeWithText(item1.value).assertExists().assertIsDisplayed()
-        testRule.onNodeWithText(item2.value).assertExists().assertIsDisplayed()
+        testRule.onNodeWithText(item3.value).assertExists().assertIsDisplayed()
     }
 
     @Test
