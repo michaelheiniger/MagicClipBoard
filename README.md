@@ -3,13 +3,8 @@
 Share your clipboard across all your devices !
 
 ## Status
-
--
-Main: ![Build](https://github.com/michaelheiniger/MagicClipBoard/actions/workflows/build.yml/badge.svg?branch=main)
-
--
-
-Develop![Build](https://github.com/michaelheiniger/MagicClipBoard/actions/workflows/build.yml/badge.svg?branch=develop)
+- Main: ![Build](https://github.com/michaelheiniger/MagicClipBoard/actions/workflows/build.yml/badge.svg?branch=main)
+- Develop: ![Build](https://github.com/michaelheiniger/MagicClipBoard/actions/workflows/build.yml/badge.svg?branch=develop)
 
 Run E2E tests:
 
