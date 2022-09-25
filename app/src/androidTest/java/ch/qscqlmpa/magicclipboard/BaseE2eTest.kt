@@ -3,18 +3,13 @@ package ch.qscqlmpa.magicclipboard
 import android.content.res.Resources
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.qscqlmpa.magicclipboard.data.remote.Store
 import ch.qscqlmpa.magicclipboard.idlingresource.McbIdlingResource
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.runner.RunWith
 import org.koin.android.ext.android.get
 
-@RunWith(AndroidJUnit4::class)
 abstract class BaseE2eTest {
 
     @get:Rule

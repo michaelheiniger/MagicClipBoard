@@ -151,7 +151,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
 
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.2.1")
     // Espresso (needed for CounterIdlingResource)
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
