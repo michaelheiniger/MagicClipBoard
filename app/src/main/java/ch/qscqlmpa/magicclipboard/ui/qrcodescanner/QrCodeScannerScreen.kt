@@ -17,24 +17,7 @@ import ch.qscqlmpa.magicclipboard.ui.common.YesNoDialog
 import ch.qscqlmpa.magicclipboard.ui.theme.MagicClipBoardTheme
 
 @Composable
-fun QrCodeScannerTopScreen() {
-    MagicClipBoardTheme {
-        Scaffold { innerPadding ->
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-                Text(stringResource(R.string.scan_qr_code_hint))
-            }
-        }
-    }
-}
-
-@Composable
-fun QrCodeScannerBottomScreen(
+fun QrCodeScannerTopScreen(
     showPermissionDenied: State<Boolean>,
     showPermissionHint: State<Boolean>,
     showQrCodeDecodingFailed: State<Boolean>,
@@ -47,7 +30,16 @@ fun QrCodeScannerBottomScreen(
     onStartingCameraErrorOkClick: () -> Unit
 ) {
     MagicClipBoardTheme {
-        Scaffold {
+        Scaffold { innerPadding ->
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                Text(stringResource(R.string.scan_qr_code_hint))
+            }
             if (showPermissionDenied.value) {
                 YesNoDialog(
                     text = R.string.camera_permission_denied,

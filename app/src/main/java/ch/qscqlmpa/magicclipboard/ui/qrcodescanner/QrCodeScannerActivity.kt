@@ -65,8 +65,7 @@ class QrCodeScannerActivity : ComponentActivity() {
         previewView = binding.previewView
 
         binding.composeView.setContent {
-            QrCodeScannerTopScreen()
-            QrCodeScannerBottomScreen(
+            QrCodeScannerTopScreen(
                 showPermissionDenied = showPermissionDenied,
                 showPermissionHint = showPermissionHint,
                 showQrCodeDecodingFailed = showQrCodeDecodingFailed,
