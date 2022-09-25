@@ -52,8 +52,7 @@ class FirebaseStore(
     }
 
     override fun observeClipboardItems(): Flow<List<McbItem>> {
-        val clipboardItemsTypeIndicator =
-            object : GenericTypeIndicator<Map<String, McbItemDto>>() {} // ktlint-disable max-line-length
+        val clipboardItemsTypeIndicator = object : GenericTypeIndicator<Map<String, McbItemDto>>() {}
         return callbackFlow {
             val callback = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -72,8 +71,9 @@ class FirebaseStore(
                     channel.close()
                 }
             }
-            clipboardItemsReference.addValueEventListener(callback)
-            awaitClose { clipboardItemsReference.removeEventListener(callback) }
+            val reference = clipboardItemsReference
+            reference.addValueEventListener(callback)
+            awaitClose { reference.removeEventListener(callback) }
         }.buffer(Channel.CONFLATED)
     }
 
@@ -102,10 +102,11 @@ class FirebaseStore(
         }.buffer(Channel.CONFLATED)
     }
 
-    private val clipboardItemsReference: DatabaseReference by lazy {
-        val userId = sessionStateProvider.userId ?: throw IllegalStateException("User is unauthenticated")
-        db.getReference("users/${userId.value}/clipboardItems")
-    }
+    private val clipboardItemsReference: DatabaseReference
+        get() {
+            val userId = sessionStateProvider.userId ?: throw IllegalStateException("User is unauthenticated")
+            return db.getReference("users/${userId.value}/clipboardItems")
+        }
 
     private fun toDto(item: McbItem): McbItemDto {
         return McbItemDto().apply {

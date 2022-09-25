@@ -12,13 +12,13 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val prodSessionModule = module {
-    single { SessionManager(get()) }.bind(SessionStateProvider::class)
+    single { SessionManager() }.bind(SessionStateProvider::class)
 }
 
 val prodStoreModule = module {
     single<Store> {
         val database = Firebase.database("https://magicclipboard-7a33d-default-rtdb.europe-west1.firebasedatabase.app")
-        database.setPersistenceEnabled(true)
+        database.setPersistenceEnabled(true) // Provide local caching of the Firebase DB
         if (BuildConfig.DEBUG) database.setLogLevel(Logger.Level.DEBUG)
         FirebaseStore(get(ioDispatcherName), database, get())
     }

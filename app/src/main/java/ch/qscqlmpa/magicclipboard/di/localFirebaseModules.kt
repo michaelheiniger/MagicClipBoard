@@ -18,7 +18,7 @@ val testSessionModule = module {
         val auth = FirebaseAuth.getInstance()
         auth.useEmulator(EMULATOR_HOST, 9099)
         auth.signOut()
-        SessionManager(auth)
+        SessionManager()
     }.bind(SessionStateProvider::class)
 }
 

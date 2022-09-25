@@ -20,11 +20,7 @@ sealed interface SessionState {
 @JvmInline
 value class UserId(val value: String)
 
-class SessionManager(
-    initialAuth: FirebaseAuth
-) : SessionStateProvider {
-
-    private var auth: FirebaseAuth = initialAuth
+class SessionManager : SessionStateProvider {
 
     override val userId: UserId?
         get() {
@@ -43,7 +39,6 @@ class SessionManager(
                          - session state: ${buildSessionState(newAuthState)}
                     """
                 }
-                auth = newAuthState
                 trySend(buildSessionState(newAuthState))
             }
             auth.addAuthStateListener(callback)
@@ -55,6 +50,9 @@ class SessionManager(
         auth.signOut()
     }
 
+    private val auth: FirebaseAuth
+        get() = FirebaseAuth.getInstance()
+
     private fun buildSessionState(auth: FirebaseAuth): SessionState {
         val user = auth.currentUser ?: return SessionState.Unauthenticated
         return when (user.isAnonymous) {
@@ -63,10 +61,9 @@ class SessionManager(
         }
     }
 
-    private fun FirebaseUser.getInfo(): String {
-        return """
+    private fun FirebaseUser.getInfo() =
+        """
             - uid: ${this.uid}
             - displayName: ${this.displayName}
         """.trimIndent()
-    }
 }
