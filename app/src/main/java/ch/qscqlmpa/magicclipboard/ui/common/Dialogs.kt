@@ -1,8 +1,21 @@
 package ch.qscqlmpa.magicclipboard.ui.common
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,51 +88,11 @@ fun YesNoDialog(
     onYesClick: () -> Unit = {},
     onClose: () -> Unit = {},
 ) {
-    Dialog(
-        onDismissRequest = onClose,
-        properties = DialogProperties(),
-        content = {
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colors.surface,
-                contentColor = contentColorFor(MaterialTheme.colors.surface)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = text, color = MaterialTheme.colors.primary)
-                    Spacer(Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = {
-                                onNoClick()
-                                onClose()
-                            },
-                            modifier = Modifier
-                                .testTag(UiTags.dialogNoBtn)
-                        ) {
-                            Text(stringResource(R.string.no))
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        TextButton(
-                            onClick = {
-                                onYesClick()
-                                onClose()
-                            },
-                            modifier = Modifier.testTag(UiTags.dialogYesBtn)
-                        ) {
-                            Text(stringResource(R.string.yes))
-                        }
-                    }
-                }
-            }
-        }
+    YesNoDialog(
+        content = { Text(text = text, color = MaterialTheme.colors.onSurface) },
+        onNoClick,
+        onYesClick,
+        onClose
     )
 }
 
@@ -152,6 +125,10 @@ fun YesNoDialog(
                         horizontalArrangement = Arrangement.End
                     ) {
                         TextButton(
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = MaterialTheme.colors.onPrimary
+                            ),
                             onClick = {
                                 onNoClick()
                                 onClose()
@@ -163,6 +140,10 @@ fun YesNoDialog(
                         }
                         Spacer(Modifier.width(8.dp))
                         TextButton(
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = MaterialTheme.colors.onPrimary
+                            ),
                             onClick = {
                                 onYesClick()
                                 onClose()
@@ -176,6 +157,14 @@ fun YesNoDialog(
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun YesNoDialogPreview() {
+    MagicClipBoardTheme {
+        YesNoDialog(text = R.string.app_name)
+    }
 }
 
 @Preview(showBackground = true)
