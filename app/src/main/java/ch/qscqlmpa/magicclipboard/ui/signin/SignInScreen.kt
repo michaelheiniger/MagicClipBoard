@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -143,6 +145,9 @@ private fun SignInBody(
                         modifier = Modifier.testTag(UiTags.emailInput),
                         label = { Text(text = "E-mail") },
                         value = uiState.email,
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = MaterialTheme.colors.onSurface
+                        ),
                         onValueChange = onEmailChange
                     )
                 }
@@ -151,6 +156,9 @@ private fun SignInBody(
                         modifier = Modifier.testTag(UiTags.passwordInput),
                         label = { Text(text = "Password") },
                         value = uiState.password,
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = MaterialTheme.colors.onSurface
+                        ),
                         visualTransformation = PasswordVisualTransformation(),
                         onValueChange = onPasswordChange
                     )
