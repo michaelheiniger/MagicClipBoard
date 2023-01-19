@@ -90,16 +90,15 @@ workflows:
           - $removeLabels(["small", "medium"])
           - $addLabel("large")
 
-  # This workflow assigns a random reviewer to pull requests.
-  # This helps guarantee that most pull requests are reviewed by at least one person.
+  # This workflow automatically assigns reviewers to pull requests.
   - name: reviewer-assignment
     description: Assign a reviewer to pull requests
     always-run: true
     if:
-      # Automatically assign a random reviewer when the pull request is ready for review;
+      # Automatically assign a reviewer when the pull request is ready for review;
       - rule: $isDraft() == false
         extra-actions:
-          - $assignRandomReviewer()
+          - $assignReviewer(["michaelheiniger"])
 
   # This workflow signals pull requests waiting for reviews.
   # This helps guarantee that pull requests are reviewed and approved by at least one person.
@@ -122,14 +121,14 @@ workflows:
       - rule: $hasFileExtensions([".md", ".txt"])
         extra-actions:
           - $addLabel("docs")
-      # Label pull requests with `infra` if they modify Terraform files.
-      - rule: $hasFileExtensions([".tf"])
+      # Label pull requests with `pipeline` if they modify GitHub workflows.
+      - rule: $hasFilePattern(".github/workflows/**")
         extra-actions:
           - $addLabel("infra")
-      # Label pull requests with `dependencies` if they only modify `package.json` and `package.lock` files.
-      - rule: $hasFileExtensions(["package.json", "package-lock.json"])
+      # Label pull requests with `dependencies` if they only modify any `build.gradle`files.
+      - rule: $hasFileExtensions(["build.gradle"])
         extra-actions:
-          - $addLabel("dependencies")
+          - $addLabel("dependencies/config")
 
   # This workflow validates that pull requests do not contain changes to the license.
   # This helps avoid unwanted license modifications.
