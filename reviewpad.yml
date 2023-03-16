@@ -147,11 +147,11 @@ workflows:
           
   
   # This workflow automatically assigns reviewers to pull requests.
-  - name: reviewer-assignment
-    description: Assign a reviewer to pull requests
-    always-run: true
-    if:
-      # Automatically assign a reviewer when the pull request is ready for review;
-      - rule: $isDraft() == false
-        extra-actions:
-          - $assignReviewer(["michaelheiniger", "michaelheiniger-mo"], 1, "round-robin")
+#  - name: reviewer-assignment
+#    description: Assign a reviewer to pull requests
+#    always-run: true
+#    if:
+#      # Automatically assign a reviewer when the pull request is ready for review;
+#      - rule: $isDraft() == false
+#        extra-actions:
+#          - $assignReviewer(["michaelheiniger", "michaelheiniger-mo"], 1, "round-robin")
