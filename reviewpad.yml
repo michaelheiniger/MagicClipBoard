@@ -130,7 +130,8 @@ workflows:
     description: Auto merge PRs only about documentation changes
     alwars-run: true
     if:
-      - rule: $hasFileExtensions([".md"])# && $checkRunConclusion("build") == "success"
+      - rule: $hasFileExtensions([".md"])
+#      - rule: $hasFileExtensions([".md"]) && $checkRunConclusion("build") == "success"
     then:
       - $merge("rebase")
 
