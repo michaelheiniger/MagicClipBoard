@@ -7,6 +7,7 @@
 api-version: reviewpad.com/v3.x
 
 mode: verbose # by default "silent"
+metrics-on-merge: true # Prints PR Metrics like Coding Time, Pickup Time and Review Time when the PR is merged.
 
 # Define the list of labels to be used by Reviewpad.
 # For more details see https://docs.reviewpad.com/guides/syntax#label.
