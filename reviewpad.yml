@@ -15,7 +15,6 @@ workflows:
     alwars-run: true
     if:
       - rule: $hasFileExtensions([".md"])
-#      - rule: $hasFileExtensions([".md"]) && $checkRunConclusion("build") == "success"
     then:
       - $merge("rebase")
           
