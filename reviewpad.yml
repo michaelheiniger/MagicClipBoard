@@ -98,7 +98,7 @@ workflows:
       # Automatically assign a reviewer when the pull request is ready for review;
       - rule: $isDraft() == false
         extra-actions:
-          - $assignReviewer(["michaelheiniger"])
+          - $assignReviewer(["michaelheiniger", "michaelheiniger-mo"], 2, "round-robin")
 
   # This workflow signals pull requests waiting for reviews.
   # This helps guarantee that pull requests are reviewed and approved by at least one person.
