@@ -16,6 +16,7 @@ workflows:
     if:
       - rule: $hasFileExtensions([".md"])
     then:
+      - $approve("auto-merge-docs-changes")
       - $merge("rebase")
           
  
