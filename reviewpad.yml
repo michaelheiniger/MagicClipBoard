@@ -146,3 +146,11 @@ workflows:
       - rule: $hasFilePattern("**/LICENSE*")
         extra-actions:
           - $fail("License files cannot be modified")
+          
+  - name: auto-merge-docs-changes
+    description: Auto merge PRs only about documentation changes
+    alwars-run: true
+    if:
+      - rule: $hasFileExtensions([".md"]) && $checkRunConclusion("build") == "success"
+    then:
+      - $merge("rebase")
