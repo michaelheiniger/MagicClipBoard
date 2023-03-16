@@ -4,7 +4,7 @@
 # For more details see https://docs.reviewpad.com/guides/syntax.
 
 # Define the version of Reviewpad to be used.
-api-version: reviewpad.com/v3.x
+api-version: reviewpad.com/v4.x
 
 mode: verbose # by default "silent"
 metrics-on-merge: true # Prints PR Metrics like Coding Time, Pickup Time and Review Time when the PR is merged.
@@ -93,16 +93,6 @@ workflows:
           - $removeLabels(["small", "medium"])
           - $addLabel("large")
 
-  # This workflow automatically assigns reviewers to pull requests.
-  - name: reviewer-assignment
-    description: Assign a reviewer to pull requests
-    always-run: true
-    if:
-      # Automatically assign a reviewer when the pull request is ready for review;
-      - rule: $isDraft() == false
-        extra-actions:
-          - $assignReviewer(["michaelheiniger", "michaelheiniger-mo"], 1, "round-robin")
-
   # This workflow signals pull requests waiting for reviews.
   # This helps guarantee that pull requests are reviewed and approved by at least one person.
   - name: check-approvals
@@ -135,6 +125,14 @@ workflows:
       - rule: $hasFileExtensions(["build.gradle"])
         extra-actions:
           - $addLabel("dependencies/config")
+          
+  - name: auto-merge-docs-changes
+    description: Auto merge PRs only about documentation changes
+    alwars-run: true
+    if:
+      - rule: $hasFileExtensions([".md"]) && $checkRunConclusion("build") == "success"
+    then:
+      - $merge("rebase")
 
   # This workflow validates that pull requests do not contain changes to the license.
   # This helps avoid unwanted license modifications.
@@ -147,10 +145,13 @@ workflows:
         extra-actions:
           - $fail("License files cannot be modified")
           
-  - name: auto-merge-docs-changes
-    description: Auto merge PRs only about documentation changes
-    alwars-run: true
+  
+  # This workflow automatically assigns reviewers to pull requests.
+  - name: reviewer-assignment
+    description: Assign a reviewer to pull requests
+    always-run: true
     if:
-      - rule: $hasFileExtensions([".md"]) && $checkRunConclusion("build") == "success"
-    then:
-      - $merge("rebase")
+      # Automatically assign a reviewer when the pull request is ready for review;
+      - rule: $isDraft() == false
+        extra-actions:
+          - $assignReviewer(["michaelheiniger", "michaelheiniger-mo"], 1, "round-robin")
