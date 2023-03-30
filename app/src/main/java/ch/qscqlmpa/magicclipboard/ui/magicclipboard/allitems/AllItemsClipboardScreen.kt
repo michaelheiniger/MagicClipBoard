@@ -78,7 +78,7 @@ import kotlin.math.roundToInt
 @Preview(showBackground = true)
 @Composable
 private fun AllItemsClipboardBodyPreview() {
-    MagicClipBoardTheme {
+    MagicClipBoardTheme(darkTheme = false) {
         AllItemsClipboardBody(
             uiState = MagicClipboardUiState(
                 currentDateTime = LocalDateTime.now(),
