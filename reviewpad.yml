@@ -30,7 +30,7 @@ workflows:
     description: for testing purpose only, to be deleted when done
     always-run: true
     if:
-      - rule: $checkRunConclusion("build") == "success"
+      - rule: $checkRunConclusion("pr-build") == "success"
         extra-actions:
           - $addLabel("build success")
 
