@@ -20,7 +20,7 @@ open class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Firebase.initialize(this)
-        setupKoin awdaw da () // Intentionally break the build to test reviewpad
+        setupKoin()
     }
 
     open fun setupKoin() {
