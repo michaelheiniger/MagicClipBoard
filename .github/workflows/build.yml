@@ -1,4 +1,4 @@
-name: Build all variants
+name: build-all-variants
 
 # Controls when the action will run.
 on:
