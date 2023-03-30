@@ -31,8 +31,8 @@ workflows:
     always-run: true
     if:
       - rule: $checkRunConclusion("build") == "success"
-      extra-actions:
-        - $addLabel("build success")
+        extra-actions:
+          - $addLabel("build success")
 
   # This workflow validates best practices for pull request management.
   # This helps developers follow best practices.
