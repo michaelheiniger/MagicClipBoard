@@ -30,7 +30,7 @@ workflows:
     description: for testing purpose only, to be deleted when done
     always-run: true
     if:
-      - rule: $checkRunConclusion("pr-build") == "success"
+      - rule: $checkRunConclusion("build-all-variants") == "success"
         extra-actions:
           - $addLabel("build success")
 
@@ -98,8 +98,7 @@ workflows:
     description: Auto merge PRs only about documentation changes
     alwars-run: true
     if:
-      - rule: $hasFileExtensions([".md"])
-    #      - rule: $hasFileExtensions([".md"]) && $checkRunConclusion("build") == "success"
+      - rule: $hasFileExtensions([".md", ".txt"]) && $checkRunConclusion("build-all-variants") == "success"
     then:
       - $approve("auto-merge-docs-changes")
       - $merge("rebase")
