@@ -26,6 +26,12 @@ labels:
 # A workflow is a list of actions that will be executed based on the defined rules.
 # For more details see https://docs.reviewpad.com/guides/syntax#workflow.
 workflows:
+  - name: test-check-run-conclusion
+    description: for testing purpose only, to be deleted when done
+    always-run: true
+    - rule: $checkRunConclusion("build") == "success"
+        extra-actions:
+          - $addLabel("build success")
 
   # This workflow validates best practices for pull request management.
   # This helps developers follow best practices.
