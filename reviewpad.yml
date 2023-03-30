@@ -29,9 +29,10 @@ workflows:
   - name: test-check-run-conclusion
     description: for testing purpose only, to be deleted when done
     always-run: true
-    - rule: $checkRunConclusion("build") == "success"
-        extra-actions:
-          - $addLabel("build success")
+    if:
+      - rule: $checkRunConclusion("build") == "success"
+      extra-actions:
+        - $addLabel("build success")
 
   # This workflow validates best practices for pull request management.
   # This helps developers follow best practices.
