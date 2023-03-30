@@ -142,6 +142,20 @@ workflows:
         extra-actions:
           - $fail("License files cannot be modified")
   
+  - name: attention-set
+    if:
+      - rule: $isWaitingForReview()
+        extra-actions:
+          - $addLabel("waiting-review")
+      - rule: $isWaitingForReview() == false
+        extra-actions:
+          - $removeLabel("waiting-review")
+      - rule: $hasUnaddressedThreads()
+        extra-actions:
+          - $addLabel("requires-author-attention")
+      - rule: $hasUnaddressedThreads() == false
+        extra-actions:
+          - $removeLabel("requires-author-attention")
   
   - name: reviewer-assignment
     description: Assign a reviewer to pull requests
